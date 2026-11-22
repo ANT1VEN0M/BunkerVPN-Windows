@@ -8,6 +8,8 @@ on:
         default: '6'
         required: false
 
+permissions: write-all
+
 jobs:
   web-desktop:
     name: Interactive Windows Desktop in Browser
@@ -17,6 +19,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup .NET 8.0 SDK
         uses: actions/setup-dotnet@v4
@@ -119,10 +124,19 @@ jobs:
           Write-Host "  ССЫЛКА: $vncUrl" -ForegroundColor Cyan
           Write-Host "==========================================================" -ForegroundColor Green
           
+          # Publish URL to session branch for instant retrieval
+          $vncUrl.Trim() | Out-File -FilePath "vnc_url.txt" -Encoding utf8 -NoNewline
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B session
+          git add vnc_url.txt
+          git commit -m "chore: update live vnc session url"
+          git push -f origin session
+          
           $summary = @"
           # 🐈‍⬛ BUNKER VPN — ОБЛАЧНЫЙ WINDOWS РАБОЧИЙ СТОЛ (noVNC)
           
-          ## 🚀 Твоя виртуальная машина готова к работе!
+          ## 🚀 Твоя виртуалка готова к работе!
           
           ### 👉 [КЛИКНИ СЮДА, ЧТОБЫ ОТКРЫТЬ BUNKERVPN В БРАУЗЕРЕ]($vncUrl) 👈
           
