@@ -70,3 +70,4 @@
 - 👑 **Создатель:** [@k0tlux](https://t.me/k0tlux)
 - 🤖 **Android-клиент:** [BunkerVPN для Android](https://github.com/ANT1VEN0M/BunkerVPN)
 - 🌐 **Веб-портал подписок:** [Bunker Auto-Engine](https://ant1ven0m.github.io/Bunker-Auto-Engine/)
+- 🔌 **Telegram-плагины:** [Bunker Neon Loader & Chat Translator](https://github.com/ANT1VEN0M/Bunker-Auto-Engine/tree/main/plugins)
