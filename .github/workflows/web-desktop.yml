@@ -1,0 +1,149 @@
+name: 🎮 Web Windows Desktop (noVNC)
+
+on:
+  workflow_dispatch:
+    inputs:
+      hours:
+        description: 'Session duration in hours (1-6)'
+        default: '6'
+        required: false
+
+jobs:
+  web-desktop:
+    name: Interactive Windows Desktop in Browser
+    runs-on: windows-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8.0 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Download sing-box core & WinTUN driver
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path core
+          Write-Host "[+] Downloading sing-box core..."
+          $sbUrl = "https://github.com/SagerNet/sing-box/releases/download/v1.11.4/sing-box-1.11.4-windows-amd64.zip"
+          Invoke-WebRequest -Uri $sbUrl -OutFile singbox.zip
+          Expand-Archive singbox.zip -DestinationPath sb_extracted
+          Get-ChildItem -Path sb_extracted -Recurse -Filter "sing-box.exe" | Copy-Item -Destination "core\sing-box.exe"
+          
+          Write-Host "[+] Downloading WinTUN driver..."
+          $wtUrl = "https://www.wintun.net/builds/wintun-0.14.1.zip"
+          Invoke-WebRequest -Uri $wtUrl -OutFile wintun.zip
+          Expand-Archive wintun.zip -DestinationPath wt_extracted
+          Copy-Item "wt_extracted\wintun\bin\amd64\wintun.dll" -Destination "core\wintun.dll"
+
+      - name: Publish BunkerVPN Application
+        shell: pwsh
+        run: |
+          dotnet publish src/BunkerVPN/BunkerVPN.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
+          New-Item -ItemType Directory -Force -Path publish\core
+          Copy-Item core\sing-box.exe publish\core\
+          Copy-Item core\wintun.dll publish\core\
+
+      - name: Install TightVNC, websockify & noVNC
+        shell: pwsh
+        run: |
+          Write-Host "[+] Installing TightVNC..."
+          choco install tightvnc -y
+          
+          Write-Host "[+] Installing websockify & downloading noVNC..."
+          pip install websockify
+          git clone --depth 1 https://github.com/novnc/noVNC.git C:\noVNC
+          
+          Write-Host "[+] Configuring TightVNC (passwordless access for 1-tap connection)..."
+          New-Item -Path "HKLM:\Software\TightVNC\Server" -Force | Out-Null
+          Set-ItemProperty -Path "HKLM:\Software\TightVNC\Server" -Name "UseVncAuthentication" -Value 0 -Type DWord
+          New-Item -Path "HKCU:\Software\TightVNC\Server" -Force | Out-Null
+          Set-ItemProperty -Path "HKCU:\Software\TightVNC\Server" -Name "UseVncAuthentication" -Value 0 -Type DWord
+
+      - name: Start VNC Server, Websockify & BunkerVPN
+        shell: pwsh
+        run: |
+          Write-Host "[+] Starting TightVNC Server in User Mode..."
+          Stop-Service tvnserver -ErrorAction SilentlyContinue
+          Start-Process "C:\Program Files\TightVNC\tvnserver.exe" -ArgumentList "-run"
+          Start-Sleep -Seconds 3
+          
+          Write-Host "[+] Starting Websockify bridge (Port 6080 -> 5900)..."
+          Start-Process python -ArgumentList "-m websockify --web C:\noVNC 6080 127.0.0.1:5900" -WindowStyle Hidden
+          Start-Sleep -Seconds 2
+          
+          Write-Host "[+] Launching BunkerVPN.exe on desktop..."
+          Start-Process -FilePath "publish\BunkerVPN.exe"
+          Start-Sleep -Seconds 3
+
+      - name: Establish Cloudflare Tunnel & Expose Web Desktop
+        shell: pwsh
+        run: |
+          Write-Host "[+] Downloading Cloudflared..."
+          Invoke-WebRequest -Uri "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe" -OutFile "C:\cloudflared.exe"
+          
+          Write-Host "[+] Starting Cloudflare Tunnel..."
+          $cfLog = "$env:TEMP\cloudflared.log"
+          $cfProc = Start-Process -FilePath "C:\cloudflared.exe" -ArgumentList "tunnel --url http://localhost:6080" -RedirectStandardError $cfLog -PassThru -NoNewWindow
+          
+          $tunnelUrl = $null
+          for ($i = 0; $i -lt 30; $i++) {
+              Start-Sleep -Seconds 2
+              if (Test-Path $cfLog) {
+                  $content = Get-Content $cfLog -Raw
+                  if ($content -match '(https://[a-zA-Z0-9-]+\.trycloudflare\.com)') {
+                      $tunnelUrl = $matches[1]
+                      break
+                  }
+              }
+          }
+          
+          if (-not $tunnelUrl) {
+              Write-Error "Failed to obtain Cloudflare Tunnel URL! Log content:"
+              Get-Content $cfLog
+              exit 1
+          }
+          
+          $vncUrl = "$tunnelUrl/vnc.html?autoconnect=true&resize=scale"
+          
+          Write-Host "==========================================================" -ForegroundColor Green
+          Write-Host "  🐈‍⬛ BUNKER VPN ОБЛАЧНЫЙ WINDOWS РАБОЧИЙ СТОЛ ГОТОВ!" -ForegroundColor Yellow
+          Write-Host "  ССЫЛКА: $vncUrl" -ForegroundColor Cyan
+          Write-Host "==========================================================" -ForegroundColor Green
+          
+          $summary = @"
+          # 🐈‍⬛ BUNKER VPN — ОБЛАЧНЫЙ WINDOWS РАБОЧИЙ СТОЛ (noVNC)
+          
+          ## 🚀 Твоя виртуальная машина готова к работе!
+          
+          ### 👉 [КЛИКНИ СЮДА, ЧТОБЫ ОТКРЫТЬ BUNKERVPN В БРАУЗЕРЕ]($vncUrl) 👈
+          
+          * 📱 **Прямая ссылка:** $vncUrl
+          * 🎮 **Управление:** Полный тачскрин / мышь прямо со смартфона
+          * ⚡ **Автоподключение:** Без паролей, сразу открывается рабочий стол с запущенным BunkerVPN v1.0.6
+          * ⏳ **Время сессии:** ${{ github.event.inputs.hours || 6 }} часов
+          "@
+          
+          $summary | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8
+          
+          # Keep session alive
+          $hours = [int]${{ github.event.inputs.hours || 6 }}
+          if ($hours -le 0) { $hours = 6 }
+          $maxSeconds = $hours * 3600
+          $elapsed = 0
+          Write-Host "[+] Keeping session alive for $hours hours..."
+          while ($elapsed -lt $maxSeconds) {
+              Start-Sleep -Seconds 30
+              $elapsed += 30
+              if ($elapsed % 300 -eq 0) {
+                  Write-Host "[Keep-Alive] Сессия активна: $([math]::Round($elapsed/60)) мин / $($hours*60) мин (URL: $vncUrl)"
+              }
+          }
