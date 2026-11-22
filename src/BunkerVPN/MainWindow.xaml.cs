@@ -13,7 +13,7 @@ namespace BunkerVPN
         public MainWindow()
         {
             InitializeComponent();
-            (Application.Current as App)?.RegisterMainWindow(this);
+            (System.Windows.Application.Current as App)?.RegisterMainWindow(this);
 
             Loaded += async (s, e) =>
             {
@@ -49,11 +49,11 @@ namespace BunkerVPN
             if (ViewModel.Settings.MinimizeToTrayOnClose)
             {
                 Hide();
-                (Application.Current as App)?.ShowNotification("Бункер Кота VPN", "Приложение продолжает работать в системном трее.");
+                (System.Windows.Application.Current as App)?.ShowNotification("Бункер Кота VPN", "Приложение продолжает работать в системном трее.");
             }
             else
             {
-                (Application.Current as App)?.ExitApplication();
+                (System.Windows.Application.Current as App)?.ExitApplication();
             }
         }
 

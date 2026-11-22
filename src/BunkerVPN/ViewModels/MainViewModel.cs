@@ -120,7 +120,7 @@ namespace BunkerVPN.ViewModels
 
             _coreManager.LogReceived += log =>
             {
-                App.Current.Dispatcher.Invoke(() =>
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     Logs.Add($"[{DateTime.Now:HH:mm:ss}] {log}");
                     if (Logs.Count > 200) Logs.RemoveAt(0);
@@ -129,7 +129,7 @@ namespace BunkerVPN.ViewModels
 
             _coreManager.CoreExited += () =>
             {
-                App.Current.Dispatcher.Invoke(() =>
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     if (IsConnected)
                     {
@@ -248,13 +248,13 @@ namespace BunkerVPN.ViewModels
                 IsConnected = true;
                 _connectionStartTime = DateTime.Now;
                 _durationTimer.Start();
-                (App.Current as App)?.UpdateTrayIcon(true, SelectedServer.Name);
-                (App.Current as App)?.ShowNotification("Бункер Кота VPN", $"Успешно подключено к {SelectedServer.Name}");
+                (System.Windows.Application.Current as App)?.UpdateTrayIcon(true, SelectedServer.Name);
+                (System.Windows.Application.Current as App)?.ShowNotification("Бункер Кота VPN", $"Успешно подключено к {SelectedServer.Name}");
             }
             else
             {
                 IsConnected = false;
-                (App.Current as App)?.UpdateTrayIcon(false, "");
+                (System.Windows.Application.Current as App)?.UpdateTrayIcon(false, "");
             }
 
             OnPropertyChanged(nameof(StatusText));
@@ -268,7 +268,7 @@ namespace BunkerVPN.ViewModels
             IsConnected = false;
             IsConnecting = false;
             DurationText = "00:00:00";
-            (App.Current as App)?.UpdateTrayIcon(false, "");
+            (System.Windows.Application.Current as App)?.UpdateTrayIcon(false, "");
             OnPropertyChanged(nameof(StatusText));
             OnPropertyChanged(nameof(StatusColor));
         }
@@ -277,7 +277,7 @@ namespace BunkerVPN.ViewModels
         {
             await PingService.TestAllNodesAsync(Servers, () =>
             {
-                App.Current.Dispatcher.Invoke(FilterServers);
+                System.Windows.Application.Current.Dispatcher.Invoke(FilterServers);
             });
         }
 

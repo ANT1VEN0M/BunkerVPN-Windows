@@ -10,7 +10,7 @@ using BunkerVPN.Services;
 
 namespace BunkerVPN
 {
-    public partial class App : Application
+    public partial class App : System.Windows.Application
     {
         private static Mutex? _mutex;
         private Forms.NotifyIcon? _notifyIcon;
@@ -24,7 +24,7 @@ namespace BunkerVPN
             if (!isNewInstance)
             {
                 // App is already running
-                Current.Shutdown();
+                Shutdown();
                 return;
             }
 
@@ -120,7 +120,7 @@ namespace BunkerVPN
             _mainWindow?.CleanUp();
             _notifyIcon?.Dispose();
             _mutex?.ReleaseMutex();
-            Current.Shutdown();
+            Shutdown();
         }
 
         protected override void OnExit(ExitEventArgs e)
