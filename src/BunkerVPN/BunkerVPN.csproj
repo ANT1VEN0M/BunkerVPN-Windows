@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>Resources\Icons\app_icon.ico</ApplicationIcon>
+    <AssemblyName>BunkerVPN</AssemblyName>
+    <RootNamespace>BunkerVPN</RootNamespace>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Authors>Alexander Petrashkevich (KOT ANTIDOT)</Authors>
+    <Company>Бункер Кота</Company>
+    <Product>BunkerVPN for Windows PC</Product>
+    <Description>Высокоскоростной клиент обхода блокировок для Windows 10/11 с поддержкой TUN, VLESS Reality, WireGuard WARP+, Trojan, Hysteria 2 и Discord Voice.</Description>
+    <Copyright>Copyright © 2026 Bunker Kota</Copyright>
+    
+    <!-- Self-contained and single-file publish optimizations -->
+    <PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
+    <SelfContained Condition="'$(Configuration)' == 'Release'">true</SelfContained>
+    <RuntimeIdentifier Condition="'$(Configuration)' == 'Release'">win-x64</RuntimeIdentifier>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Icons\app_icon.ico" />
+    <Resource Include="Resources\Icons\app_icon.png" />
+    <Resource Include="Resources\Icons\tray_connected.ico" />
+    <Resource Include="Resources\Icons\tray_disconnected.ico" />
+  </ItemGroup>
+
+</Project>

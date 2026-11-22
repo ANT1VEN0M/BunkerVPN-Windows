@@ -1,0 +1,147 @@
+name: Build & Release BunkerVPN Windows
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Windows Client & Installer
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8.0 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress
+
+      - name: Download sing-box core & WinTUN driver
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path core
+          New-Item -ItemType Directory -Force -Path dist
+          
+          Write-Host "[+] Downloading sing-box core..."
+          $sbUrl = "https://github.com/SagerNet/sing-box/releases/download/v1.11.4/sing-box-1.11.4-windows-amd64.zip"
+          Invoke-WebRequest -Uri $sbUrl -OutFile singbox.zip
+          Expand-Archive singbox.zip -DestinationPath sb_extracted
+          Get-ChildItem -Path sb_extracted -Recurse -Filter "sing-box.exe" | Copy-Item -Destination "core\sing-box.exe"
+          
+          Write-Host "[+] Downloading WinTUN driver..."
+          $wtUrl = "https://www.wintun.net/builds/wintun-0.14.1.zip"
+          Invoke-WebRequest -Uri $wtUrl -OutFile wintun.zip
+          Expand-Archive wintun.zip -DestinationPath wt_extracted
+          Copy-Item "wt_extracted\wintun\bin\amd64\wintun.dll" -Destination "core\wintun.dll"
+
+          Write-Host "[+] Core files prepared:"
+          Get-ChildItem core\
+
+      - name: Publish .NET 8 WPF Application
+        shell: pwsh
+        run: |
+          dotnet publish src/BunkerVPN/BunkerVPN.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
+
+      - name: Package Core into Output
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path publish\core
+          Copy-Item core\sing-box.exe publish\core\
+          Copy-Item core\wintun.dll publish\core\
+          Write-Host "[+] Packaged publish directory:"
+          Get-ChildItem publish\
+
+      - name: Automated Smoke Test & Screen Capture
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.Windows.Forms
+          Add-Type -AssemblyName System.Drawing
+
+          Write-Host "[+] Testing core version:"
+          & "publish\core\sing-box.exe" version
+
+          Write-Host "[+] Launching BunkerVPN for smoke test..."
+          $proc = Start-Process -FilePath "publish\BunkerVPN.exe" -PassThru
+          Start-Sleep -Seconds 4
+
+          # Capture Screen to artifact
+          $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+          $bitmap = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
+          $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+          $graphics.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
+          $screenshotPath = "dist\bunkervpn_smoke_test.png"
+          $bitmap.Save($screenshotPath, [System.Drawing.Imaging.ImageFormat]::Png)
+          $graphics.Dispose()
+          $bitmap.Dispose()
+
+          Write-Host "[+] Smoke test completed. Process alive: $(!$proc.HasExited)"
+          Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+
+      - name: Create Portable ZIP
+        shell: pwsh
+        run: |
+          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.0-Portable.zip -CompressionLevel Optimal
+
+      - name: Compile Inno Setup Installer
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\setup.iss
+
+      - name: Upload Smoke Test Screenshot Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-smoke-test-screenshot
+          path: dist\bunkervpn_smoke_test.png
+          if-no-files-found: ignore
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: BunkerVPN-Windows-v1.0.0
+          path: |
+            dist\BunkerVPN-Windows-v1.0.0-Setup.exe
+            dist\BunkerVPN-Windows-v1.0.0-Portable.zip
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.0
+          name: BunkerVPN for Windows v1.0.0 🚀
+          body: |
+            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.0)
+            
+            Официальный высокоскоростной клиент **Бункер Кота VPN** для компьютеров и ноутбуков на Windows 10 и Windows 11!
+
+            ---
+
+            ### ⚡ Возможности:
+            * 🚀 **TUN-режим (Глобальный VPN):** Весь трафик системы, браузеры, игры, Steam и голосовой чат Discord работают через виртуальный адаптер WinTUN.
+            * 🎮 **Discord Voice & Full-Cone UDP:** Мгновенное подключение к голосовым каналам Discord без зависаний RTC.
+            * 🛡️ **Умный обход блокировок (Bypass Russia):** Сайты РФ (Яндекс, Госуслуги, банки) открываются напрямую на максимальной скорости провайдера, а заблокированные ресурсы — через защищённый туннель.
+            * 🌐 **Системный прокси:** Легковесный режим работы без необходимости запуска от имени администратора.
+            * 📡 **Автоподхват подписок Бункера:** В один клик переключайтесь между Мировым Миксом, Турбо-серверами, Discord, Белым списком и WARP+.
+            * 🔔 **Работа в системном трее:** Сворачивается возле часов, отображает статус подключения и позволяет управлять VPN в 1 клик.
+            * 🎨 **Киберпанк-дизайн:** Тёмная тема с фирменным неоновым стилем Бункера.
+
+            ---
+
+            ### 📦 Скачать:
+            * 📥 **Установщик (Installer):** [BunkerVPN-Windows-v1.0.0-Setup.exe](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.0/BunkerVPN-Windows-v1.0.0-Setup.exe)
+            * 🧰 **Портативная версия (Portable ZIP):** [BunkerVPN-Windows-v1.0.0-Portable.zip](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.0/BunkerVPN-Windows-v1.0.0-Portable.zip)
+          files: |
+            dist/BunkerVPN-Windows-v1.0.0-Setup.exe
+            dist/BunkerVPN-Windows-v1.0.0-Portable.zip
+            dist/bunkervpn_smoke_test.png
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
