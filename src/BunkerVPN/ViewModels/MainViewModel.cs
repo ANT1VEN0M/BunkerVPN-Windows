@@ -91,6 +91,53 @@ namespace BunkerVPN.ViewModels
             set { _isPinging = value; OnPropertyChanged(); OnPropertyChanged(nameof(PingButtonText)); }
         }
 
+        // Services Unblock Status (Android-style)
+        public string TunnelHealthStatus => IsConnected ? "🟢 Защита активна • Smart Bypass" : "⚪ Ожидание подключения";
+
+        public string YtStatusText => IsConnected ? "⚡ 4K 60fps • Разблокирован" : "Заблокирован ТСПУ";
+        public string YtStatusColor => IsConnected ? "#00E676" : "#FF5252";
+
+        public string DiscordStatusText => IsConnected ? "🎮 Voice & Chat • Full-Cone" : "Ожидание VPN";
+        public string DiscordStatusColor => IsConnected ? "#00E676" : "#8B949E";
+
+        public string TgStatusText => IsConnected ? "✈️ Мгновенно • Direct SOS" : "Ожидание VPN";
+        public string TgStatusColor => IsConnected ? "#00E676" : "#8B949E";
+
+        public string AiStatusText => IsConnected ? "🤖 ChatGPT • Gemini OK" : "Ограничено в РФ";
+        public string AiStatusColor => IsConnected ? "#00E676" : "#FF5252";
+
+        public string WebStatusText => IsConnected ? "🛡️ В обход ТСПУ • Доступен" : "Заблокировано";
+        public string WebStatusColor => IsConnected ? "#00E676" : "#FF5252";
+
+        private string _urlTestResult = "URL Тест";
+        public string UrlTestResult
+        {
+            get => _urlTestResult;
+            set { _urlTestResult = value; OnPropertyChanged(); }
+        }
+
+        private bool _isTestingUrl;
+        public bool IsTestingUrl
+        {
+            get => _isTestingUrl;
+            set { _isTestingUrl = value; OnPropertyChanged(); }
+        }
+
+        public void NotifyServiceStatusChanged()
+        {
+            OnPropertyChanged(nameof(TunnelHealthStatus));
+            OnPropertyChanged(nameof(YtStatusText));
+            OnPropertyChanged(nameof(YtStatusColor));
+            OnPropertyChanged(nameof(DiscordStatusText));
+            OnPropertyChanged(nameof(DiscordStatusColor));
+            OnPropertyChanged(nameof(TgStatusText));
+            OnPropertyChanged(nameof(TgStatusColor));
+            OnPropertyChanged(nameof(AiStatusText));
+            OnPropertyChanged(nameof(AiStatusColor));
+            OnPropertyChanged(nameof(WebStatusText));
+            OnPropertyChanged(nameof(WebStatusColor));
+        }
+
         public string PingButtonText => IsPinging ? "Замер..." : "Пинг";
 
         private string _statusText = "ОТКЛЮЧЕНО";
@@ -349,11 +396,14 @@ namespace BunkerVPN.ViewModels
                 _durationTimer.Start();
                 (System.Windows.Application.Current as App)?.UpdateTrayIcon(true, SelectedServer.Name);
                 (System.Windows.Application.Current as App)?.ShowNotification("Бункер Кота VPN", $"Успешно подключено к {SelectedServer.Name}");
+                NotifyServiceStatusChanged();
+                _ = Task.Run(RunUrlTestAsync);
             }
             else
             {
                 IsConnected = false;
                 (System.Windows.Application.Current as App)?.UpdateTrayIcon(false, "");
+                NotifyServiceStatusChanged();
             }
 
             OnPropertyChanged(nameof(StatusText));
@@ -367,9 +417,51 @@ namespace BunkerVPN.ViewModels
             IsConnected = false;
             IsConnecting = false;
             DurationText = "00:00:00";
+            UrlTestResult = "URL Тест";
             (System.Windows.Application.Current as App)?.UpdateTrayIcon(false, "");
+            NotifyServiceStatusChanged();
             OnPropertyChanged(nameof(StatusText));
             OnPropertyChanged(nameof(StatusColor));
+        }
+
+        public async Task RunUrlTestAsync()
+        {
+            if (IsTestingUrl) return;
+            IsTestingUrl = true;
+            UrlTestResult = "Замер...";
+
+            try
+            {
+                var latency = await PingService.TestUrlLatencyAsync("https://cp.cloudflare.com/generate_204");
+                if (latency > 0)
+                {
+                    UrlTestResult = $"{latency} ms (204)";
+                    Logs.Add($"[+] URL Test 204: {latency} ms (Cloudflare)");
+                }
+                else
+                {
+                    var fallback = await PingService.TestUrlLatencyAsync("https://www.google.com/generate_204");
+                    if (fallback > 0)
+                    {
+                        UrlTestResult = $"{fallback} ms (Google)";
+                        Logs.Add($"[+] URL Test 204: {fallback} ms (Google)");
+                    }
+                    else
+                    {
+                        UrlTestResult = "Таймаут";
+                        Logs.Add("[-] URL Test: timeout/unreachable");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                UrlTestResult = "Ошибка";
+                Logs.Add($"[-] URL Test error: {ex.Message}");
+            }
+            finally
+            {
+                IsTestingUrl = false;
+            }
         }
 
         public async Task PingAllServersAsync()

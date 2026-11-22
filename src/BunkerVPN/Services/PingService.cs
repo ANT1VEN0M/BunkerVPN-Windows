@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
@@ -11,6 +12,31 @@ namespace BunkerVPN.Services
 {
     public class PingService
     {
+        private static readonly HttpClient HttpClient = new()
+        {
+            Timeout = TimeSpan.FromSeconds(4)
+        };
+
+        public static async Task<int> TestUrlLatencyAsync(string url = "https://cp.cloudflare.com/generate_204", int timeoutMs = 2500)
+        {
+            try
+            {
+                var sw = Stopwatch.StartNew();
+                using var cts = new CancellationTokenSource(timeoutMs);
+                using var resp = await HttpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cts.Token);
+                sw.Stop();
+                if ((int)resp.StatusCode >= 200 && (int)resp.StatusCode < 400)
+                {
+                    return (int)sw.ElapsedMilliseconds;
+                }
+            }
+            catch
+            {
+                // Timeout or network error
+            }
+            return -1;
+        }
+
         public static async Task<int> TestTcpPingAsync(string host, int port, int timeoutMs = 1500)
         {
             if (string.IsNullOrWhiteSpace(host) || port <= 0) return -1;

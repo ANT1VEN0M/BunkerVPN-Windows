@@ -194,14 +194,15 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
                         <!-- Center Status & Big Connect Button -->
                         <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
                             <!-- Glowing Status Ring -->
-                            <Grid Width="170" Height="170" Margin="0,0,0,24">
+                            <Grid Width="160" Height="160" Margin="0,0,0,20">
                                 <Ellipse Stroke="{Binding StatusColor}" StrokeThickness="4" Opacity="0.3" />
-                                <Ellipse Stroke="{Binding StatusColor}" StrokeThickness="2" Width="150" Height="150">
+                                <Ellipse Stroke="{Binding StatusColor}" StrokeThickness="2" Width="140" Height="140">
                                     <Ellipse.Effect>
                                         <DropShadowEffect Color="{Binding StatusColor}" BlurRadius="20" ShadowDepth="0" />
                                     </Ellipse.Effect>
@@ -216,7 +217,7 @@
 
                             <!-- Big Action Button -->
                             <Button Click="ConnectButton_Click"
-                                    Width="220" Height="48"
+                                    Width="220" Height="46"
                                     Style="{StaticResource BunkerButtonStyle}"
                                     Background="{Binding ConnectionButtonBackground}"
                                     BorderThickness="0"
@@ -228,10 +229,114 @@
                             </Button>
                         </StackPanel>
 
+                        <!-- Services Unblock Status Grid (Android-style) -->
+                        <Border Grid.Row="1" Margin="0,14,0,14" Background="#141923"
+                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="14,12">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,10">
+                                    <TextBlock Text="🛡️ СТАТУС РАЗБЛОКИРОВКИ СЕРВИСОВ (ТСПУ BYPASS)"
+                                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" FontWeight="Bold" />
+                                    <TextBlock HorizontalAlignment="Right" Text="{Binding TunnelHealthStatus}"
+                                               Foreground="{StaticResource AccentCyanBrush}" FontSize="11" FontWeight="SemiBold" />
+                                </Grid>
+                                <UniformGrid Columns="3" Rows="2">
+                                    <!-- 1. YouTube 4K -->
+                                    <Border Background="#1A212E" CornerRadius="8" Padding="10,8" Margin="3">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="▶️" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="YouTube 4K" Foreground="#FFFFFF" FontSize="11" FontWeight="Bold"/>
+                                                <TextBlock Text="{Binding YtStatusText}" Foreground="{Binding YtStatusColor}" FontSize="10"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- 2. Discord Voice -->
+                                    <Border Background="#1A212E" CornerRadius="8" Padding="10,8" Margin="3">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="🎮" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="Discord Voice" Foreground="#FFFFFF" FontSize="11" FontWeight="Bold"/>
+                                                <TextBlock Text="{Binding DiscordStatusText}" Foreground="{Binding DiscordStatusColor}" FontSize="10"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- 3. Telegram SOS -->
+                                    <Border Background="#1A212E" CornerRadius="8" Padding="10,8" Margin="3">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="✈️" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="Telegram SOS" Foreground="#FFFFFF" FontSize="11" FontWeight="Bold"/>
+                                                <TextBlock Text="{Binding TgStatusText}" Foreground="{Binding TgStatusColor}" FontSize="10"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- 4. AI Services -->
+                                    <Border Background="#1A212E" CornerRadius="8" Padding="10,8" Margin="3">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="🤖" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="AI (GPT•Claude)" Foreground="#FFFFFF" FontSize="11" FontWeight="Bold"/>
+                                                <TextBlock Text="{Binding AiStatusText}" Foreground="{Binding AiStatusColor}" FontSize="10"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- 5. Instagram / X -->
+                                    <Border Background="#1A212E" CornerRadius="8" Padding="10,8" Margin="3">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="📸" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="Insta / X / Web" Foreground="#FFFFFF" FontSize="11" FontWeight="Bold"/>
+                                                <TextBlock Text="{Binding WebStatusText}" Foreground="{Binding WebStatusColor}" FontSize="10"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- 6. RU Smart Bypass -->
+                                    <Border Background="#1A212E" CornerRadius="8" Padding="10,8" Margin="3">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="🏛️" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="Банки / Госуслуги" Foreground="#FFFFFF" FontSize="11" FontWeight="Bold"/>
+                                                <TextBlock Text="⚡ Напрямую (RU)" Foreground="#00E676" FontSize="10"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
                         <!-- Bottom Selected Server Info -->
-                        <Border Grid.Row="1" Background="{StaticResource SurfaceBrush}"
+                        <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}"
                                 BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
-                                CornerRadius="12" Padding="16,14">
+                                CornerRadius="12" Padding="16,12">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -286,6 +391,7 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
                             <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
@@ -302,7 +408,8 @@
                             </TextBox>
 
                             <Button Grid.Column="1" Click="PingAll_Click" Margin="8,0,0,0"
-                                    Style="{StaticResource BunkerButtonStyle}" Height="38" Padding="14,0">
+                                    Style="{StaticResource BunkerButtonStyle}" Height="38" Padding="12,0"
+                                    ToolTip="Замерить задержку всех серверов и отсортировать">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="⚡" Margin="0,0,6,0" />
                                     <TextBlock Text="{Binding PingButtonText}" />
@@ -310,7 +417,7 @@
                             </Button>
 
                             <Button Grid.Column="2" Click="SortByPing_Click" Margin="8,0,0,0"
-                                    Style="{StaticResource BunkerButtonStyle}" Height="38" Padding="14,0"
+                                    Style="{StaticResource BunkerButtonStyle}" Height="38" Padding="12,0"
                                     ToolTip="Отсортировать сервера: минимальный пинг сверху">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="📶" Margin="0,0,6,0" />
@@ -318,8 +425,17 @@
                                 </StackPanel>
                             </Button>
 
-                            <Button Grid.Column="3" Click="RefreshServers_Click" Margin="8,0,0,0"
-                                    Style="{StaticResource BunkerButtonStyle}" Height="38" Padding="14,0">
+                            <Button Grid.Column="3" Click="UrlTest_Click" Margin="8,0,0,0"
+                                    Style="{StaticResource BunkerButtonStyle}" Height="38" Padding="12,0"
+                                    ToolTip="Реальный замер скорости HTTP 204 через туннель">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🌐" Margin="0,0,6,0" />
+                                    <TextBlock Text="{Binding UrlTestResult}" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button Grid.Column="4" Click="RefreshServers_Click" Margin="8,0,0,0"
+                                    Style="{StaticResource BunkerButtonStyle}" Height="38" Padding="12,0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="🔄" Margin="0,0,6,0" />
                                     <TextBlock Text="Обновить" />
