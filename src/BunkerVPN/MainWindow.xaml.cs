@@ -152,6 +152,16 @@ namespace BunkerVPN
             }
         }
 
+        private async void CheckUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            await ViewModel.CheckForUpdatesAsync(silent: false);
+        }
+
+        private async void ApplyUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            await ViewModel.DownloadAndApplyUpdateAsync();
+        }
+
         public void CleanUp()
         {
             ViewModel.CleanUp();

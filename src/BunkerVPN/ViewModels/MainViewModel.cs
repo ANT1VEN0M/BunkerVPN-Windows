@@ -15,10 +15,53 @@ namespace BunkerVPN.ViewModels
     {
         private readonly CoreManager _coreManager = new();
         private readonly SubscriptionService _subService = new();
+        private readonly UpdateService _updateService = new();
         private readonly DispatcherTimer _durationTimer = new();
         private DateTime _connectionStartTime;
 
         public AppSettings Settings { get; set; } = AppSettings.Load();
+
+        private bool _isUpdateAvailable;
+        public bool IsUpdateAvailable
+        {
+            get => _isUpdateAvailable;
+            set { _isUpdateAvailable = value; OnPropertyChanged(); }
+        }
+
+        private string _updateVersion = "";
+        public string UpdateVersion
+        {
+            get => _updateVersion;
+            set { _updateVersion = value; OnPropertyChanged(); }
+        }
+
+        private string _updateDownloadUrl = "";
+        public string UpdateDownloadUrl
+        {
+            get => _updateDownloadUrl;
+            set { _updateDownloadUrl = value; OnPropertyChanged(); }
+        }
+
+        private int _updateDownloadProgress;
+        public int UpdateDownloadProgress
+        {
+            get => _updateDownloadProgress;
+            set { _updateDownloadProgress = value; OnPropertyChanged(); }
+        }
+
+        private bool _isDownloadingUpdate;
+        public bool IsDownloadingUpdate
+        {
+            get => _isDownloadingUpdate;
+            set { _isDownloadingUpdate = value; OnPropertyChanged(); }
+        }
+
+        private string _updateCheckStatus = $"Текущая версия: v{UpdateService.CurrentVersion}";
+        public string UpdateCheckStatus
+        {
+            get => _updateCheckStatus;
+            set { _updateCheckStatus = value; OnPropertyChanged(); }
+        }
 
         private bool _isConnected;
         public bool IsConnected
@@ -156,6 +199,12 @@ namespace BunkerVPN.ViewModels
             {
                 await ConnectAsync();
             }
+
+            // 4. Background check for updates if enabled
+            if (Settings.AutoCheckUpdates)
+            {
+                _ = Task.Run(() => CheckForUpdatesAsync(silent: true));
+            }
         }
 
         public async Task RefreshServersAsync()
@@ -279,6 +328,58 @@ namespace BunkerVPN.ViewModels
             {
                 System.Windows.Application.Current.Dispatcher.Invoke(FilterServers);
             });
+        }
+
+        public async Task CheckForUpdatesAsync(bool silent = true)
+        {
+            UpdateCheckStatus = "Проверка обновлений...";
+            try
+            {
+                var update = await _updateService.CheckForUpdatesAsync();
+                if (update.HasUpdate)
+                {
+                    IsUpdateAvailable = true;
+                    UpdateVersion = update.LatestVersion;
+                    UpdateDownloadUrl = update.DownloadUrl;
+                    UpdateCheckStatus = $"Доступно обновление: {update.LatestVersion}!";
+                    (System.Windows.Application.Current as App)?.ShowNotification("BunkerVPN Обновление", $"Доступна новая версия {update.LatestVersion}!");
+                }
+                else
+                {
+                    IsUpdateAvailable = false;
+                    UpdateCheckStatus = $"У вас установлена последняя версия (v{UpdateService.CurrentVersion}).";
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!silent) UpdateCheckStatus = $"Ошибка проверки: {ex.Message}";
+            }
+        }
+
+        public async Task DownloadAndApplyUpdateAsync()
+        {
+            if (string.IsNullOrEmpty(UpdateDownloadUrl) || IsDownloadingUpdate) return;
+
+            IsDownloadingUpdate = true;
+            UpdateCheckStatus = "Загрузка обновления...";
+
+            try
+            {
+                var progress = new Progress<int>(p =>
+                {
+                    UpdateDownloadProgress = p;
+                    UpdateCheckStatus = $"Загрузка обновления: {p}%...";
+                });
+
+                var installerPath = await _updateService.DownloadUpdateAsync(UpdateDownloadUrl, progress);
+                UpdateCheckStatus = "Запуск установщика...";
+                _updateService.LaunchInstallerAndExit(installerPath);
+            }
+            catch (Exception ex)
+            {
+                IsDownloadingUpdate = false;
+                UpdateCheckStatus = $"Ошибка скачивания: {ex.Message}";
+            }
         }
 
         public void CleanUp()
