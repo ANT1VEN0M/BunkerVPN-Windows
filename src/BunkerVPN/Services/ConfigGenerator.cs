@@ -174,35 +174,46 @@ namespace BunkerVPN.Services
                 }
                 return outbound;
             }
-            else if (raw.StartsWith("warp://", StringComparison.OrdinalIgnoreCase))
+            else if (raw.StartsWith("ss://", StringComparison.OrdinalIgnoreCase))
             {
-                outbound["type"] = "masque";
+                outbound["type"] = "shadowsocks";
                 outbound["server"] = node.Server;
                 outbound["server_port"] = node.Port;
-                outbound["address"] = node.Server;
-                outbound["port"] = node.Port;
+                outbound["method"] = "aes-256-gcm";
+                outbound["password"] = "password";
 
-                var uri = new Uri(raw);
-                var query = HttpUtility.ParseQueryString(uri.Query);
-
-                var privKey = HttpUtility.UrlDecode(uri.UserInfo);
-                var pubKey = query["public_key"] ?? query["publickey"] ?? "";
-                var sni = query["sni"] ?? "zt-masque.cloudflareclient.com";
-                var network = query["network"] ?? "h2";
-
-                outbound["tls"] = new Dictionary<string, object>
+                try
                 {
-                    ["enabled"] = true,
-                    ["server_name"] = sni,
-                    ["insecure"] = true
-                };
-
-                outbound["private_key"] = privKey;
-                outbound["public_key"] = pubKey;
-                outbound["system"] = false;
-                outbound["use_http2"] = !network.Equals("quic", StringComparison.OrdinalIgnoreCase);
-                outbound["udp_timeout"] = "5m0s";
-                outbound["udp_keepalive_period"] = "30s";
+                    var atIdx = raw.IndexOf('@');
+                    if (atIdx > 5)
+                    {
+                        var userPart = raw[5..atIdx];
+                        // If base64 encoded method:password
+                        try
+                        {
+                            var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(userPart));
+                            var colon = decoded.IndexOf(':');
+                            if (colon > 0)
+                            {
+                                outbound["method"] = decoded[..colon];
+                                outbound["password"] = decoded[(colon + 1)..];
+                            }
+                        }
+                        catch
+                        {
+                            var colon = userPart.IndexOf(':');
+                            if (colon > 0)
+                            {
+                                outbound["method"] = userPart[..colon];
+                                outbound["password"] = userPart[(colon + 1)..];
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    // Use fallback defaults
+                }
 
                 return outbound;
             }

@@ -54,10 +54,9 @@ namespace BunkerVPN.Models
                 }
                 else if (rawUri.StartsWith("warp://", StringComparison.OrdinalIgnoreCase))
                 {
-                    node.Protocol = "MASQUE";
-                    node.IsWarp = true;
-                    ExtractHostPortName(rawUri, node);
-                    return node;
+                    // Note: Official sing-box core does not support Hiddify-specific warp:// MASQUE scheme.
+                    // Cloudflare WARP on Windows PC is fully provided via native wireguard:// on port 880.
+                    return null;
                 }
                 else if (rawUri.StartsWith("vless://", StringComparison.OrdinalIgnoreCase))
                 {
