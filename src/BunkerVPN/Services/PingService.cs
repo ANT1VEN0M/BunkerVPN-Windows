@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,6 +31,48 @@ namespace BunkerVPN.Services
             }
         }
 
+        public static async Task<int> TestIcmpPingAsync(string host, int timeoutMs = 1200)
+        {
+            if (string.IsNullOrWhiteSpace(host)) return -1;
+
+            try
+            {
+                using var ping = new System.Net.NetworkInformation.Ping();
+                var reply = await ping.SendPingAsync(host, timeoutMs);
+                if (reply.Status == IPStatus.Success)
+                {
+                    return (int)reply.RoundtripTime;
+                }
+            }
+            catch
+            {
+                // Ignore ICMP errors
+            }
+            return -1;
+        }
+
+        public static async Task<int> TestNodePingAsync(ServerNode node, int timeoutMs = 1500)
+        {
+            if (string.IsNullOrWhiteSpace(node.Server)) return -1;
+
+            // WireGuard / Cloudflare WARP uses UDP. ICMP ping is fastest and accurate for measuring latency.
+            if (node.Protocol.Equals("WireGuard", StringComparison.OrdinalIgnoreCase) || node.IsWarp)
+            {
+                var icmp = await TestIcmpPingAsync(node.Server, timeoutMs);
+                if (icmp > 0) return icmp;
+            }
+
+            // TCP connect test for VLESS, Trojan, Shadowsocks, Hysteria2
+            if (node.Port > 0)
+            {
+                var tcp = await TestTcpPingAsync(node.Server, node.Port, timeoutMs);
+                if (tcp > 0) return tcp;
+            }
+
+            // Fallback to ICMP ping if TCP connection was dropped
+            return await TestIcmpPingAsync(node.Server, timeoutMs);
+        }
+
         public static async Task TestAllNodesAsync(IEnumerable<ServerNode> nodes, Action? onProgress = null)
         {
             var parallelOptions = new ParallelOptions
@@ -39,11 +82,8 @@ namespace BunkerVPN.Services
 
             await Parallel.ForEachAsync(nodes, parallelOptions, async (node, ct) =>
             {
-                if (!string.IsNullOrEmpty(node.Server) && node.Port > 0)
-                {
-                    node.PingMs = await TestTcpPingAsync(node.Server, node.Port);
-                    onProgress?.Invoke();
-                }
+                node.PingMs = await TestNodePingAsync(node);
+                onProgress?.Invoke();
             });
         }
     }

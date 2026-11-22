@@ -14,6 +14,7 @@ namespace BunkerVPN.Models
         public bool StartWithWindows { get; set; } = false;
         public bool MinimizeToTrayOnClose { get; set; } = true;
         public bool AutoCheckUpdates { get; set; } = true;
+        public bool AutoSortByPing { get; set; } = true;
         public string LastSelectedServerId { get; set; } = "";
         public string PrimaryDns { get; set; } = "1.1.1.1";
         public string SecondaryDns { get; set; } = "77.88.8.8";

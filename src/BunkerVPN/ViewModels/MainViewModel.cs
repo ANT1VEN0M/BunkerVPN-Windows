@@ -84,6 +84,15 @@ namespace BunkerVPN.ViewModels
             set { _isRefreshing = value; OnPropertyChanged(); }
         }
 
+        private bool _isPinging;
+        public bool IsPinging
+        {
+            get => _isPinging;
+            set { _isPinging = value; OnPropertyChanged(); OnPropertyChanged(nameof(PingButtonText)); }
+        }
+
+        public string PingButtonText => IsPinging ? "Замер..." : "Пинг";
+
         private string _statusText = "ОТКЛЮЧЕНО";
         public string StatusText
         {
@@ -194,13 +203,19 @@ namespace BunkerVPN.ViewModels
             // 2. Refresh servers in background
             await RefreshServersAsync();
 
-            // 3. Auto-connect if enabled
+            // 3. Auto-ping and auto-sort servers if enabled
+            if (Settings.AutoSortByPing)
+            {
+                _ = Task.Run(PingAllServersAsync);
+            }
+
+            // 4. Auto-connect if enabled
             if (Settings.AutoConnectOnStartup && SelectedServer != null)
             {
                 await ConnectAsync();
             }
 
-            // 4. Background check for updates if enabled
+            // 5. Background check for updates if enabled
             if (Settings.AutoCheckUpdates)
             {
                 _ = Task.Run(() => CheckForUpdatesAsync(silent: true));
@@ -222,6 +237,10 @@ namespace BunkerVPN.ViewModels
                 if (nodes.Count > 0)
                 {
                     SetServers(nodes);
+                    if (Settings.AutoSortByPing)
+                    {
+                        _ = Task.Run(PingAllServersAsync);
+                    }
                 }
             }
             catch (Exception ex)
@@ -253,15 +272,46 @@ namespace BunkerVPN.ViewModels
             FilteredServers.Clear();
             var q = SearchText.Trim().ToLowerInvariant();
 
-            foreach (var s in Servers)
+            var query = Servers.Where(s =>
+                string.IsNullOrEmpty(q) ||
+                s.Name.ToLowerInvariant().Contains(q) ||
+                s.Protocol.ToLowerInvariant().Contains(q) ||
+                s.CountryCode.ToLowerInvariant().Contains(q));
+
+            if (Settings.AutoSortByPing)
             {
-                if (string.IsNullOrEmpty(q) ||
-                    s.Name.ToLowerInvariant().Contains(q) ||
-                    s.Protocol.ToLowerInvariant().Contains(q) ||
-                    s.CountryCode.ToLowerInvariant().Contains(q))
-                {
-                    FilteredServers.Add(s);
-                }
+                query = query.OrderBy(s => s.PingMs > 0 ? s.PingMs : 999999);
+            }
+
+            foreach (var s in query)
+            {
+                FilteredServers.Add(s);
+            }
+        }
+
+        public void SortServersByPing()
+        {
+            var currentSelectedId = SelectedServer?.Id;
+
+            var sorted = Servers
+                .OrderBy(s => s.PingMs > 0 ? s.PingMs : 999999)
+                .ToList();
+
+            Servers.Clear();
+            foreach (var s in sorted)
+            {
+                Servers.Add(s);
+            }
+
+            FilterServers();
+
+            if (!string.IsNullOrEmpty(currentSelectedId))
+            {
+                SelectedServer = Servers.FirstOrDefault(s => s.Id == currentSelectedId) ?? Servers.FirstOrDefault();
+            }
+            else if (Servers.Count > 0)
+            {
+                SelectedServer = Servers[0];
             }
         }
 
@@ -324,10 +374,41 @@ namespace BunkerVPN.ViewModels
 
         public async Task PingAllServersAsync()
         {
-            await PingService.TestAllNodesAsync(Servers, () =>
+            if (IsPinging || Servers.Count == 0) return;
+            IsPinging = true;
+
+            try
             {
-                System.Windows.Application.Current.Dispatcher.Invoke(FilterServers);
-            });
+                await PingService.TestAllNodesAsync(Servers, () =>
+                {
+                    if (Settings.AutoSortByPing)
+                    {
+                        System.Windows.Application.Current.Dispatcher.Invoke(FilterServers);
+                    }
+                });
+
+                if (Settings.AutoSortByPing)
+                {
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        SortServersByPing();
+
+                        // If not currently connected, select lowest ping server
+                        if (!IsConnected && FilteredServers.Count > 0 && FilteredServers[0].PingMs > 0)
+                        {
+                            SelectedServer = FilteredServers[0];
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Logs.Add($"[-] Ping test error: {ex.Message}");
+            }
+            finally
+            {
+                IsPinging = false;
+            }
         }
 
         public async Task CheckForUpdatesAsync(bool silent = true)

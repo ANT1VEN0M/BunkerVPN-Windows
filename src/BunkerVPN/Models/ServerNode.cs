@@ -1,17 +1,42 @@
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Web;
 
 namespace BunkerVPN.Models
 {
-    public class ServerNode
+    public class ServerNode : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string? propName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+        }
+
         public string Id { get; set; } = Guid.NewGuid().ToString("N");
         public string Name { get; set; } = "Bunker Server";
         public string Protocol { get; set; } = "VLESS";
         public string Server { get; set; } = "";
         public int Port { get; set; } = 443;
-        public int PingMs { get; set; } = -1;
+
+        private int _pingMs = -1;
+        public int PingMs
+        {
+            get => _pingMs;
+            set
+            {
+                if (_pingMs != value)
+                {
+                    _pingMs = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(PingDisplay));
+                    OnPropertyChanged(nameof(PingColor));
+                }
+            }
+        }
+
         public string CountryCode { get; set; } = "UN";
         public string FlagEmoji { get; set; } = "🌐";
         public string RawUri { get; set; } = "";

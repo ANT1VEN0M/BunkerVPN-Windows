@@ -152,6 +152,11 @@ namespace BunkerVPN
             }
         }
 
+        private void SortByPing_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.SortServersByPing();
+        }
+
         private async void CheckUpdates_Click(object sender, RoutedEventArgs e)
         {
             await ViewModel.CheckForUpdatesAsync(silent: false);

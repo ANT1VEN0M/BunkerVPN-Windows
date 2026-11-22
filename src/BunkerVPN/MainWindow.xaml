@@ -285,6 +285,7 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
                             <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
@@ -304,11 +305,20 @@
                                     Style="{StaticResource BunkerButtonStyle}" Height="38" Padding="14,0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="⚡" Margin="0,0,6,0" />
-                                    <TextBlock Text="Пинг" />
+                                    <TextBlock Text="{Binding PingButtonText}" />
                                 </StackPanel>
                             </Button>
 
-                            <Button Grid.Column="2" Click="RefreshServers_Click" Margin="8,0,0,0"
+                            <Button Grid.Column="2" Click="SortByPing_Click" Margin="8,0,0,0"
+                                    Style="{StaticResource BunkerButtonStyle}" Height="38" Padding="14,0"
+                                    ToolTip="Отсортировать сервера: минимальный пинг сверху">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="📶" Margin="0,0,6,0" />
+                                    <TextBlock Text="По пингу" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button Grid.Column="3" Click="RefreshServers_Click" Margin="8,0,0,0"
                                     Style="{StaticResource BunkerButtonStyle}" Height="38" Padding="14,0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="🔄" Margin="0,0,6,0" />
@@ -503,6 +513,14 @@
                                             <StackPanel>
                                                 <TextBlock Text="Умная маршрутизация (Обход сайтов РФ)" Foreground="{StaticResource TextPrimaryBrush}" FontWeight="SemiBold" />
                                                 <TextBlock Text="Сайты РФ (Яндекс, Госуслуги, банки) открываются напрямую, а заблокированные — через VPN." Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" />
+                                            </StackPanel>
+                                        </CheckBox>
+
+                                        <CheckBox IsChecked="{Binding Settings.AutoSortByPing}"
+                                                  Click="Setting_Changed" Margin="0,0,0,14">
+                                            <StackPanel>
+                                                <TextBlock Text="Автосортировка серверов по пингу" Foreground="{StaticResource TextPrimaryBrush}" FontWeight="SemiBold" />
+                                                <TextBlock Text="Автоматически замерять задержку и ставить самые быстрые серверы наверх." Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" />
                                             </StackPanel>
                                         </CheckBox>
 
