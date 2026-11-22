@@ -21,8 +21,7 @@ namespace BunkerVPN.Services
                     ["type"] = "tun",
                     ["tag"] = "tun-in",
                     ["interface_name"] = "bunker-tun",
-                    ["inet4_address"] = "172.19.0.1/30",
-                    ["inet6_address"] = "fdfe:dcba:9876::1/126",
+                    ["address"] = new[] { "172.19.0.1/30", "fdfe:dcba:9876::1/126" },
                     ["auto_route"] = true,
                     ["strict_route"] = true,
                     ["stack"] = "system",
@@ -173,6 +172,38 @@ namespace BunkerVPN.Services
                         outbound["reserved"] = reservedBytes;
                     }
                 }
+                return outbound;
+            }
+            else if (raw.StartsWith("warp://", StringComparison.OrdinalIgnoreCase))
+            {
+                outbound["type"] = "masque";
+                outbound["server"] = node.Server;
+                outbound["server_port"] = node.Port;
+                outbound["address"] = node.Server;
+                outbound["port"] = node.Port;
+
+                var uri = new Uri(raw);
+                var query = HttpUtility.ParseQueryString(uri.Query);
+
+                var privKey = HttpUtility.UrlDecode(uri.UserInfo);
+                var pubKey = query["public_key"] ?? query["publickey"] ?? "";
+                var sni = query["sni"] ?? "zt-masque.cloudflareclient.com";
+                var network = query["network"] ?? "h2";
+
+                outbound["tls"] = new Dictionary<string, object>
+                {
+                    ["enabled"] = true,
+                    ["server_name"] = sni,
+                    ["insecure"] = true
+                };
+
+                outbound["private_key"] = privKey;
+                outbound["public_key"] = pubKey;
+                outbound["system"] = false;
+                outbound["use_http2"] = !network.Equals("quic", StringComparison.OrdinalIgnoreCase);
+                outbound["udp_timeout"] = "5m0s";
+                outbound["udp_keepalive_period"] = "30s";
+
                 return outbound;
             }
             else if (raw.StartsWith("vless://", StringComparison.OrdinalIgnoreCase))

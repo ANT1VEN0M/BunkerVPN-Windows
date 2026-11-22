@@ -1,5 +1,5 @@
 #define MyAppName "BunkerVPN"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.0.1"
 #define MyAppPublisher "Bunker Kota"
 #define MyAppURL "https://t.me/BUNKER_KOTA"
 #define MyAppExeName "BunkerVPN.exe"
@@ -16,7 +16,7 @@ DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=..\dist
-OutputBaseFilename=BunkerVPN-Windows-v1.0.0-Setup
+OutputBaseFilename=BunkerVPN-Windows-v1.0.1-Setup
 SetupIconFile=..\src\BunkerVPN\Resources\Icons\app_icon.ico
 Compression=lzma2/ultra64
 SolidCompression=yes

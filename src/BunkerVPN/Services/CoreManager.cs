@@ -53,6 +53,8 @@ namespace BunkerVPN.Services
                 RedirectStandardError = true,
                 CreateNoWindow = true
             };
+            psi.EnvironmentVariables["ENABLE_LEGACY_TUN_ADDRESS_FIELDS"] = "1";
+            psi.EnvironmentVariables["ENABLE_LEGACY_SPECIAL_OUTBOUNDS"] = "1";
 
             try
             {

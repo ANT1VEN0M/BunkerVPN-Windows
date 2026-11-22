@@ -90,7 +90,7 @@ jobs:
       - name: Create Portable ZIP
         shell: pwsh
         run: |
-          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.0-Portable.zip -CompressionLevel Optimal
+          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.1-Portable.zip -CompressionLevel Optimal
 
       - name: Compile Inno Setup Installer
         shell: pwsh
@@ -107,41 +107,38 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: BunkerVPN-Windows-v1.0.0
+          name: BunkerVPN-Windows-v1.0.1
           path: |
-            dist\BunkerVPN-Windows-v1.0.0-Setup.exe
-            dist\BunkerVPN-Windows-v1.0.0-Portable.zip
+            dist\BunkerVPN-Windows-v1.0.1-Setup.exe
+            dist\BunkerVPN-Windows-v1.0.1-Portable.zip
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         with:
-          tag_name: v1.0.0
-          name: BunkerVPN for Windows v1.0.0 🚀
+          tag_name: v1.0.1
+          name: BunkerVPN for Windows v1.0.1 🚀
           body: |
-            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.0)
+            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.1)
             
-            Официальный высокоскоростной клиент **Бункер Кота VPN** для компьютеров и ноутбуков на Windows 10 и Windows 11!
+            Быстрый хотфикс: обновлены параметры TUN-адаптера под ядро sing-box 1.11.x, добавлена поддержка WARP-MASQUE и манифест с авто-запросом прав администратора (UAC)!
 
             ---
 
-            ### ⚡ Возможности:
-            * 🚀 **TUN-режим (Глобальный VPN):** Весь трафик системы, браузеры, игры, Steam и голосовой чат Discord работают через виртуальный адаптер WinTUN.
+            ### ⚡ Что исправлено в v1.0.1:
+            * 🛠️ **Фикс запуска TUN в sing-box 1.11:** Устранена фатальная ошибка `legacy tun address fields is deprecated in sing-box 1.10.0 and will be removed in sing-box 1.11.0, use address instead`. Теперь сетевой адаптер создаётся без сброса соединения.
+            * 🛡️ **Автозапрос прав администратора (UAC):** Вшит манифест приложения — Windows сама корректно запрашивает подтверждение запуска для настройки WinTUN.
+            * 🚀 **Поддержка Cloudflare WARP-MASQUE (HTTP/3 QUIC & HTTP/2):** Полноценный парсинг и маршрутизация новейших профилей MASQUE в sing-box.
             * 🎮 **Discord Voice & Full-Cone UDP:** Мгновенное подключение к голосовым каналам Discord без зависаний RTC.
-            * 🛡️ **Умный обход блокировок (Bypass Russia):** Сайты РФ (Яндекс, Госуслуги, банки) открываются напрямую на максимальной скорости провайдера, а заблокированные ресурсы — через защищённый туннель.
-            * 🌐 **Системный прокси:** Легковесный режим работы без необходимости запуска от имени администратора.
-            * 📡 **Автоподхват подписок Бункера:** В один клик переключайтесь между Мировым Миксом, Турбо-серверами, Discord, Белым списком и WARP+.
-            * 🔔 **Работа в системном трее:** Сворачивается возле часов, отображает статус подключения и позволяет управлять VPN в 1 клик.
-            * 🎨 **Киберпанк-дизайн:** Тёмная тема с фирменным неоновым стилем Бункера.
 
             ---
 
             ### 📦 Скачать:
-            * 📥 **Установщик (Installer):** [BunkerVPN-Windows-v1.0.0-Setup.exe](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.0/BunkerVPN-Windows-v1.0.0-Setup.exe)
-            * 🧰 **Портативная версия (Portable ZIP):** [BunkerVPN-Windows-v1.0.0-Portable.zip](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.0/BunkerVPN-Windows-v1.0.0-Portable.zip)
+            * 📥 **Установщик (Installer):** [BunkerVPN-Windows-v1.0.1-Setup.exe](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.1/BunkerVPN-Windows-v1.0.1-Setup.exe)
+            * 🧰 **Портативная версия (Portable ZIP):** [BunkerVPN-Windows-v1.0.1-Portable.zip](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.1/BunkerVPN-Windows-v1.0.1-Portable.zip)
           files: |
-            dist/BunkerVPN-Windows-v1.0.0-Setup.exe
-            dist/BunkerVPN-Windows-v1.0.0-Portable.zip
+            dist/BunkerVPN-Windows-v1.0.1-Setup.exe
+            dist/BunkerVPN-Windows-v1.0.1-Portable.zip
             dist/bunkervpn_smoke_test.png
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
