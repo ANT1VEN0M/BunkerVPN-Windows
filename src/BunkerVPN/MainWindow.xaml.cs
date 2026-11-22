@@ -95,7 +95,7 @@ namespace BunkerVPN
 
         private async void SelectFeed_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button btn && btn.Tag is string url)
+            if (sender is System.Windows.Controls.Button btn && btn.Tag is string url)
             {
                 ViewModel.Settings.SelectedFeedUrl = url;
                 ViewModel.Settings.CustomSubscriptionUrl = "";
