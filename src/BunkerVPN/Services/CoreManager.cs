@@ -41,7 +41,7 @@ namespace BunkerVPN.Services
             var configPath = Path.Combine(Path.GetTempPath(), "bunker_singbox_config.json");
             await File.WriteAllTextAsync(configPath, configJson);
 
-            LogReceived?.Invoke($"[+] Starting core with server: {node.Name} ({node.Protocol}) in {settings.VpnMode} mode...");
+            LogReceived?.Invoke($"[+] [PC v{UpdateService.CurrentVersion}] Starting core with server: {node.Name} ({node.Protocol}) in {settings.VpnMode} mode...");
 
             var psi = new ProcessStartInfo
             {
@@ -55,6 +55,7 @@ namespace BunkerVPN.Services
             };
             psi.EnvironmentVariables["ENABLE_LEGACY_TUN_ADDRESS_FIELDS"] = "1";
             psi.EnvironmentVariables["ENABLE_LEGACY_SPECIAL_OUTBOUNDS"] = "1";
+            psi.EnvironmentVariables["ENABLE_DEPRECATED_TUN_ADDRESS_X"] = "true";
 
             try
             {

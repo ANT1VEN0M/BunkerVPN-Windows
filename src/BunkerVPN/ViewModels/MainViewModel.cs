@@ -21,6 +21,8 @@ namespace BunkerVPN.ViewModels
 
         public AppSettings Settings { get; set; } = AppSettings.Load();
 
+        public string AppVersionDisplay => $"PC v{UpdateService.CurrentVersion}";
+
         private bool _isUpdateAvailable;
         public bool IsUpdateAvailable
         {
@@ -210,6 +212,8 @@ namespace BunkerVPN.ViewModels
 
         public MainViewModel()
         {
+            Logs.Add($"[+] BunkerVPN PC v{UpdateService.CurrentVersion} started");
+
             _durationTimer.Interval = TimeSpan.FromSeconds(1);
             _durationTimer.Tick += (s, e) =>
             {
