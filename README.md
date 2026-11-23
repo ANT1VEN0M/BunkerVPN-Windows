@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/latest"><img src="https://img.shields.io/github/v/release/ANT1VEN0M/BunkerVPN-Windows?color=FF6D00&label=%D0%A0%D0%B5%D0%BB%D0%B8%D0%B7_v1.0.7" alt="Release" /></a>
+  <a href="https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/latest"><img src="https://img.shields.io/github/v/release/ANT1VEN0M/BunkerVPN-Windows?color=00E676&label=%D0%A0%D0%B5%D0%BB%D0%B8%D0%B7_v1.0.8_Game_Booster" alt="Release" /></a>
   <img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-00E5FF" alt="Windows" />
   <img src="https://img.shields.io/badge/.NET-8.0%20WPF-7C4DFF" alt=".NET 8" />
   <img src="https://img.shields.io/badge/Core-sing--box%201.11.4-00E676" alt="Sing-box" />
@@ -21,14 +21,17 @@
 
 ---
 
-## ⚡ Главные возможности (Версия v1.0.7)
+## ⚡ Главные возможности (Версия v1.0.8 — Game Booster Edition)
 
+* 🎮 **Режим Game Booster & Discord Fix (Full-Cone UDP):**
+  Специализированный режим для геймеров и стримеров:
+  * Оптимизированный MTU `1340` исключает фрагментацию UDP-пакетов при мобильном интернете или перегруженных каналах провайдера.
+  * Включён `endpoint_independent_nat` (Full-Cone NAT) — идеальная передача звука в Discord Voice (RTC) без робо-голоса и зависания.
+  * **Умный гейминг-сплит:** Голосовые каналы Discord, сервера Supercell (Brawl Stars), Roblox и Steam Community идут через защищённый туннель, а игровой сетевой трафик (CS2, Dota 2, Valorant, Lesta/Мир Танков) и сервера загрузки Steam Content CDN — **напрямую с нативным пингом 5–15 мс** и полной скоростью тарифа.
 * 🛡️ **Полная совместимость с Sing-box 1.11+:**
   Устранены критические ошибки ядра `legacy tun address fields is deprecated` и `legacy special outbounds` через безопасные переменные окружения совместимости. TUN запускается стабильно с первого раза.
 * 🚀 **TUN-режим (Глобальный VPN для всего ПК):**
   Маршрутизация трафика всей операционной системы через виртуальный высокоскоростной сетевой драйвер **WinTUN**. Работает для браузеров, онлайн-игр, Steam, торрентов и всех фоновых служб.
-* 🎮 **Discord Voice & Full-Cone UDP:**
-  Прямая поддержка UDP-инкапсуляции и WireGuard WARP+ (порт 880) для мгновенного подключения к голосовым каналам и стримам Discord без зависания на «RTC Connecting».
 * 🛡️ **Виджет статуса сервисов (ТСПУ Bypass Grid):**
   Интерактивная панель разблокировки на главном экране в реальном времени отображает состояние ключевых платформ: **YouTube 4K**, **Discord Voice**, **Telegram SOS**, **AI (ChatGPT / Claude)**, **Instagram / X**, **Банки и Госуслуги (Smart Bypass)**.
 * 📶 **Интеллектуальная автосортировка по пингу:**
@@ -41,17 +44,15 @@
   Фоновая проверка новых версий и бесшовная установка свежих релизов прямо из интерфейса программы.
 * 🔔 **Интеграция с треем Windows и автозапуск:**
   Приложение сворачивается в системный трей возле часов, потребляет минимум оперативной памяти (~20 МБ) и позволяет управлять туннелем в один клик.
-* 🌐 **Облачный веб-десктоп (noVNC):**
-  Возможность запускать и тестировать ПК-версию прямо в браузере смартфона или планшета: [Запустить Web Desktop](https://spare-democracy-brought-freedom.trycloudflare.com/vnc.html?autoconnect=true&resize=scale).
 
 ---
 
-## 📦 Скачать BunkerVPN v1.0.7
+## 📦 Скачать BunkerVPN v1.0.8
 
 | Тип загрузки | Прямая ссылка (GitHub) | Зеркало для РФ (без VPN) | Описание |
 | :--- | :---: | :---: | :--- |
-| 📥 **Установщик (Setup.exe)** | [**Скачать Setup v1.0.7**](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.7/BunkerVPN-Windows-v1.0.7-Setup.exe) | [**Зеркало РФ (Setup)**](https://ghfast.top/https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.7/BunkerVPN-Windows-v1.0.7-Setup.exe) | Рекомендуется. Устанавливает программу, создаёт ярлыки на рабочем столе и автозапуск. |
-| 🧰 **Портативная версия (ZIP)** | [**Скачать Portable v1.0.7**](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.7/BunkerVPN-Windows-v1.0.7-Portable.zip) | [**Зеркало РФ (Portable)**](https://ghfast.top/https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.7/BunkerVPN-Windows-v1.0.7-Portable.zip) | Не требует установки. Распакуйте архив в любую папку и запустите `BunkerVPN.exe`. |
+| 📥 **Установщик (Setup.exe)** | [**Скачать Setup v1.0.8**](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.8/BunkerVPN-Windows-v1.0.8-Setup.exe) | [**Зеркало РФ (Setup)**](https://ghfast.top/https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.8/BunkerVPN-Windows-v1.0.8-Setup.exe) | Рекомендуется. Устанавливает программу, создаёт ярлыки на рабочем столе и автозапуск. |
+| 🧰 **Портативная версия (ZIP)** | [**Скачать Portable v1.0.8**](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.8/BunkerVPN-Windows-v1.0.8-Portable.zip) | [**Зеркало РФ (Portable)**](https://ghfast.top/https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.8/BunkerVPN-Windows-v1.0.8-Portable.zip) | Не требует установки. Распакуйте архив в любую папку и запустите `BunkerVPN.exe`. |
 
 ---
 

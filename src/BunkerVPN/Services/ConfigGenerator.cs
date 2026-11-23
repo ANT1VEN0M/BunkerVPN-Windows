@@ -17,7 +17,7 @@ namespace BunkerVPN.Services
 
             if (isTun)
             {
-                inbounds.Add(new Dictionary<string, object>
+                var tunDict = new Dictionary<string, object>
                 {
                     ["type"] = "tun",
                     ["tag"] = "tun-in",
@@ -27,7 +27,17 @@ namespace BunkerVPN.Services
                     ["strict_route"] = true,
                     ["stack"] = "system",
                     ["sniff"] = true
-                });
+                };
+
+                // Game Booster: MTU 1340 avoids UDP fragmentation on LTE/GPON, Full-Cone NAT for Discord Voice & P2P
+                if (settings.GameBoosterMode)
+                {
+                    tunDict["mtu"] = 1340;
+                    tunDict["endpoint_independent_nat"] = true;
+                    tunDict["udp_timeout"] = 300;
+                }
+
+                inbounds.Add(tunDict);
             }
 
             // Always add mixed inbound for local tools / fallback proxy
@@ -82,6 +92,80 @@ namespace BunkerVPN.Services
                 {
                     ["geoip"] = new[] { "ru" },
                     ["outbound"] = "direct"
+                });
+            }
+
+            if (settings.GameBoosterMode)
+            {
+                // 1. Direct routes for low-latency game servers & gigabit CDNs (Zero Ping & Max Download)
+                routeRules.Add(new Dictionary<string, object>
+                {
+                    ["domain_suffix"] = new[]
+                    {
+                        "steamcontent.com",
+                        "steamserver.net",
+                        "valve.net",
+                        "valvesoftware.com",
+                        "epicgames.com",
+                        "ea.com",
+                        "origin.com",
+                        "blizzard.com",
+                        "battle.net",
+                        "riotgames.com",
+                        "leagueoflegends.com",
+                        "pvp.net",
+                        "lesta.ru",
+                        "tanki.su",
+                        "korabli.su",
+                        "vkplay.ru"
+                    },
+                    ["outbound"] = "direct"
+                });
+
+                routeRules.Add(new Dictionary<string, object>
+                {
+                    ["geosite"] = new[] { "steam", "epicgames", "ea", "ubisoft", "blizzard", "riot", "wargaming" },
+                    ["outbound"] = "direct"
+                });
+
+                // 2. Proxy routes for blocked voice, game auth, and game servers
+                // Discord Voice & RTC (UDP high ports + domains)
+                routeRules.Add(new Dictionary<string, object>
+                {
+                    ["geosite"] = new[] { "discord" },
+                    ["outbound"] = "proxy"
+                });
+                routeRules.Add(new Dictionary<string, object>
+                {
+                    ["network"] = "udp",
+                    ["port_range"] = new[] { "50000:65535" },
+                    ["outbound"] = "proxy"
+                });
+
+                // Supercell (Brawl Stars, Clash of Clans), Roblox, Steam Community
+                routeRules.Add(new Dictionary<string, object>
+                {
+                    ["geosite"] = new[] { "supercell", "brawlstars", "clashofclans", "roblox" },
+                    ["outbound"] = "proxy"
+                });
+                routeRules.Add(new Dictionary<string, object>
+                {
+                    ["domain_suffix"] = new[]
+                    {
+                        "discord.com",
+                        "discord.gg",
+                        "discordapp.com",
+                        "discordapp.net",
+                        "discordstatus.com",
+                        "brawlstarsgame.com",
+                        "supercell.com",
+                        "supercellid.com",
+                        "roblox.com",
+                        "rbxcdn.com",
+                        "steamcommunity.com",
+                        "steam-chat.com"
+                    },
+                    ["outbound"] = "proxy"
                 });
             }
 

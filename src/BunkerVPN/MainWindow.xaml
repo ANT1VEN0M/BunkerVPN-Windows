@@ -195,6 +195,7 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
                         <!-- Center Status & Big Connect Button -->
@@ -229,8 +230,40 @@
                             </Button>
                         </StackPanel>
 
+                        <!-- 🎮 Game Booster & Discord Fix Card -->
+                        <Border Grid.Row="1" Margin="0,8,0,0"
+                                Background="{Binding GameBoosterBadgeBackground}"
+                                BorderBrush="{Binding GameBoosterBadgeBorder}"
+                                BorderThickness="1.5" CornerRadius="12" Padding="14,10"
+                                Cursor="Hand" MouseDown="GameBooster_MouseDown">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="🎮" FontSize="20" VerticalAlignment="Center" Margin="0,0,12,0"/>
+
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding GameBoosterBadgeText}" Foreground="{Binding GameBoosterBadgeForeground}"
+                                                   FontWeight="Bold" FontSize="12" Margin="0,0,8,0" />
+                                        <Border Background="#2B3648" CornerRadius="4" Padding="6,1" VerticalAlignment="Center">
+                                            <TextBlock Text="TURBO UDP" Foreground="#00E676" FontSize="9" FontWeight="Bold"/>
+                                        </Border>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding GameBoosterDescText}" Foreground="{StaticResource TextSecondaryBrush}"
+                                               FontSize="11" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
+                                </StackPanel>
+
+                                <CheckBox Grid.Column="2" IsChecked="{Binding GameBoosterMode}"
+                                          VerticalAlignment="Center" Margin="10,0,0,0" Click="GameBooster_Click"/>
+                            </Grid>
+                        </Border>
+
                         <!-- Services Unblock Status Grid (Android-style) -->
-                        <Border Grid.Row="1" Margin="0,14,0,14" Background="#141923"
+                        <Border Grid.Row="2" Margin="0,10,0,10" Background="#141923"
                                 BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="14,12">
                             <StackPanel>
                                 <Grid Margin="0,0,0,10">
@@ -334,7 +367,7 @@
                         </Border>
 
                         <!-- Bottom Selected Server Info -->
-                        <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}"
+                        <Border Grid.Row="3" Background="{StaticResource SurfaceBrush}"
                                 BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
                                 CornerRadius="12" Padding="16,12">
                             <Grid>
@@ -624,6 +657,14 @@
                                 <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}"
                                         BorderThickness="1" CornerRadius="10" Padding="16" Margin="0,0,0,16">
                                     <StackPanel>
+                                        <CheckBox IsChecked="{Binding Settings.GameBoosterMode}"
+                                                  Click="Setting_Changed" Margin="0,0,0,14">
+                                            <StackPanel>
+                                                <TextBlock Text="Режим Game Booster &amp; Discord Fix (Full-Cone UDP)" Foreground="{StaticResource TextPrimaryBrush}" FontWeight="SemiBold" />
+                                                <TextBlock Text="MTU 1340, Full-Cone NAT. Голос Discord и Brawl Stars через VPN, а CS2/Dota и закачки Steam — напрямую с минимальным пингом." Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" />
+                                            </StackPanel>
+                                        </CheckBox>
+
                                         <CheckBox IsChecked="{Binding Settings.BypassRussianSites}"
                                                   Click="Setting_Changed" Margin="0,0,0,14">
                                             <StackPanel>

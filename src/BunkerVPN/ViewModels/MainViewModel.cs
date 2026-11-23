@@ -99,7 +99,7 @@ namespace BunkerVPN.ViewModels
         public string YtStatusText => IsConnected ? "⚡ 4K 60fps • Разблокирован" : "Заблокирован ТСПУ";
         public string YtStatusColor => IsConnected ? "#00E676" : "#FF5252";
 
-        public string DiscordStatusText => IsConnected ? "🎮 Voice & Chat • Full-Cone" : "Ожидание VPN";
+        public string DiscordStatusText => IsConnected ? (GameBoosterMode ? "🎮 Discord & Brawl • Turbo UDP" : "🎮 Voice & Chat • Full-Cone") : "Ожидание VPN";
         public string DiscordStatusColor => IsConnected ? "#00E676" : "#8B949E";
 
         public string TgStatusText => IsConnected ? "✈️ Мгновенно • Direct SOS" : "Ожидание VPN";
@@ -110,6 +110,40 @@ namespace BunkerVPN.ViewModels
 
         public string WebStatusText => IsConnected ? "🛡️ В обход ТСПУ • Доступен" : "Заблокировано";
         public string WebStatusColor => IsConnected ? "#00E676" : "#FF5252";
+
+        public bool GameBoosterMode
+        {
+            get => Settings.GameBoosterMode;
+            set
+            {
+                if (Settings.GameBoosterMode != value)
+                {
+                    Settings.GameBoosterMode = value;
+                    Settings.Save();
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(GameBoosterBadgeText));
+                    OnPropertyChanged(nameof(GameBoosterBadgeBackground));
+                    OnPropertyChanged(nameof(GameBoosterBadgeBorder));
+                    OnPropertyChanged(nameof(GameBoosterBadgeForeground));
+                    OnPropertyChanged(nameof(GameBoosterDescText));
+                    OnPropertyChanged(nameof(DiscordStatusText));
+                    AppendLog(value ? "🎮 Game Booster: ВКЛЮЧЕН (Full-Cone UDP • MTU 1340 • Bypass CS2/Dota/Steam)" : "🎮 Game Booster: ВЫКЛЮЧЕН");
+                }
+            }
+        }
+
+        public string GameBoosterBadgeText => Settings.GameBoosterMode ? "🎮 GAME BOOSTER: ВКЛ" : "🎮 GAME BOOSTER: ВЫКЛ";
+        public string GameBoosterBadgeBackground => Settings.GameBoosterMode ? "#132E22" : "#1A212E";
+        public string GameBoosterBadgeBorder => Settings.GameBoosterMode ? "#00E676" : "#2E384D";
+        public string GameBoosterBadgeForeground => Settings.GameBoosterMode ? "#00E676" : "#8B949E";
+        public string GameBoosterDescText => Settings.GameBoosterMode
+            ? "⚡ Ускорение активно: Discord & Brawl Stars в туннеле, CS2/Dota и закачки Steam напрямую с мин. пингом"
+            : "Нажмите для оптимизации сетевого стека под Discord Voice и онлайн-игры без потери пинга";
+
+        public void ToggleGameBooster()
+        {
+            GameBoosterMode = !GameBoosterMode;
+        }
 
         private string _urlTestResult = "URL Тест";
         public string UrlTestResult

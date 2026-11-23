@@ -10,6 +10,7 @@ namespace BunkerVPN.Models
         public string CustomSubscriptionUrl { get; set; } = "";
         public string VpnMode { get; set; } = "TUN"; // "TUN" or "SystemProxy"
         public bool BypassRussianSites { get; set; } = true;
+        public bool GameBoosterMode { get; set; } = true; // Enabled by default for Discord and Gaming stability
         public bool AutoConnectOnStartup { get; set; } = false;
         public bool StartWithWindows { get; set; } = false;
         public bool MinimizeToTrayOnClose { get; set; } = true;
