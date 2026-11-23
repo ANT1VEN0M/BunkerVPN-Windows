@@ -124,14 +124,9 @@ namespace BunkerVPN
             ViewModel?.Settings.Save();
         }
 
-        private void GameBooster_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel?.ToggleGameBooster();
-        }
-
         private void GameBooster_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left)
+            if (e.ChangedButton == MouseButton.Left && !(e.OriginalSource is CheckBox))
             {
                 ViewModel?.ToggleGameBooster();
             }

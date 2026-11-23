@@ -127,7 +127,18 @@ namespace BunkerVPN.ViewModels
                     OnPropertyChanged(nameof(GameBoosterBadgeForeground));
                     OnPropertyChanged(nameof(GameBoosterDescText));
                     OnPropertyChanged(nameof(DiscordStatusText));
-                    AppendLog(value ? "🎮 Game Booster: ВКЛЮЧЕН (Full-Cone UDP • MTU 1340 • Bypass CS2/Dota/Steam)" : "🎮 Game Booster: ВЫКЛЮЧЕН");
+                    try
+                    {
+                        System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
+                        {
+                            Logs.Add(value ? "🎮 Game Booster: ВКЛЮЧЕН (Full-Cone UDP • MTU 1340 • Bypass CS2/Dota/Steam)" : "🎮 Game Booster: ВЫКЛЮЧЕН");
+                            if (Logs.Count > 200) Logs.RemoveAt(0);
+                        });
+                    }
+                    catch
+                    {
+                        // Ignore UI thread errors
+                    }
                 }
             }
         }

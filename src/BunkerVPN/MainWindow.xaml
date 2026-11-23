@@ -258,7 +258,7 @@
                                 </StackPanel>
 
                                 <CheckBox Grid.Column="2" IsChecked="{Binding GameBoosterMode}"
-                                          VerticalAlignment="Center" Margin="10,0,0,0" Click="GameBooster_Click"/>
+                                          VerticalAlignment="Center" Margin="10,0,0,0"/>
                             </Grid>
                         </Border>
 
