@@ -58,7 +58,7 @@
 
 ## 🚀 Быстрый старт
 
-1. Скачайте установщик `BunkerVPN-Windows-v1.0.7-Setup.exe` (или распакуйте Portable ZIP).
+1. Скачайте установщик `BunkerVPN-Windows-v1.0.8-Setup.exe` (или распакуйте Portable ZIP).
 2. Запустите приложение (при запросе UAC разрешите запуск от имени администратора для работы драйвера WinTUN).
 3. Нажмите большую оранжевую кнопку **«ПОДКЛЮЧИТЬ»**.
 4. Проверьте задержку серверов на вкладке **«Серверы»** или нажмите **«📶 По пингу»** для автосортировки лучших узлов.
@@ -79,6 +79,7 @@
 - 📢 **Telegram-канал:** [@BUNKER_KOTA](https://t.me/BUNKER_KOTA) *(1400+ подписчиков)*
 - 💬 **Чат сообщества:** [@BUNKER_K0TA](https://t.me/BUNKER_K0TA)
 - 👑 **Создатель:** [@k0tlux](https://t.me/k0tlux)
-- 🤖 **Android-клиент (v1.4.1):** [BunkerVPN для Android](https://github.com/ANT1VEN0M/BunkerVPN)
+- 🤖 **Android-клиент (v1.4.2 Hotfix):** [BunkerVPN для Android](https://github.com/ANT1VEN0M/BunkerVPN)
+- 📡 **Сетевой монитор:** [Bunker URL Test v1.1.2 Universal](https://github.com/ANT1VEN0M/Bunker-Url-Test)
 - 🌐 **Официальный веб-портал:** [Bunker Auto-Engine](https://ant1ven0m.github.io/Bunker-Auto-Engine/)
 - 🔌 **Telegram-плагины:** [Bunker Neon Loader & Chat Translator](https://github.com/ANT1VEN0M/Bunker-Auto-Engine/tree/main/plugins)
