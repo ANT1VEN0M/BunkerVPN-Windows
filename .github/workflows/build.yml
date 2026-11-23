@@ -90,7 +90,7 @@ jobs:
       - name: Create Portable ZIP
         shell: pwsh
         run: |
-          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.6-Portable.zip -CompressionLevel Optimal
+          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.7-Portable.zip -CompressionLevel Optimal
 
       - name: Compile Inno Setup Installer
         shell: pwsh
@@ -107,27 +107,28 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: BunkerVPN-Windows-v1.0.6
+          name: BunkerVPN-Windows-v1.0.7
           path: |
-            dist\BunkerVPN-Windows-v1.0.6-Setup.exe
-            dist\BunkerVPN-Windows-v1.0.6-Portable.zip
+            dist\BunkerVPN-Windows-v1.0.7-Setup.exe
+            dist\BunkerVPN-Windows-v1.0.7-Portable.zip
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         with:
-          tag_name: v1.0.6
-          name: BunkerVPN for Windows v1.0.6 🚀
+          tag_name: v1.0.7
+          name: BunkerVPN for Windows v1.0.7 🚀
           body: |
-            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.6)
+            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.7)
             
-            ⚡ Фирменный релиз: динамическая индикация версии в UI и логах, принудительное закрытие старых копий при установке (CloseApplications=force) и виджет сервисов ТСПУ!
+            ⚡ Фирменный релиз: полная совместимость с ядром sing-box 1.11+, флаги совместимости TUN (`ENABLE_DEPRECATED_TUN_ADDRESS_FIELDS=true`), динамическая индикация версии в UI и логах.
 
             ---
 
-            ### ⚡ Что нового в v1.0.6:
-            * 🛡️ **Гарантированное обновление (Installer Upgrade Fix):** Установщик Inno Setup теперь принудительно завершает старые зависшие копии `BunkerVPN.exe`, предотвращая запуск устаревших бинарников v1.0.0.
-            * 🏷️ **Динамический бейдж версии:** В шапке окна и в каждой строке лога теперь крупно отображается точная версия программы (`[PC v1.0.6]`).
+            ### ⚡ Что нового в v1.0.7:
+            * 🛡️ **Фикс ядра sing-box 1.11+:** Добавлены системные флаги `ENABLE_DEPRECATED_TUN_ADDRESS_FIELDS=true` и `ENABLE_DEPRECATED_SPECIAL_OUTBOUNDS=true`, исключающие фатальные сбои при запуске туннеля на любой системе.
+            * 🔄 **Принудительное закрытие старых версий:** Установщик Inno Setup теперь гарантированно останавливает старый фоновый процесс `BunkerVPN.exe`, предотвращая ситуации, когда в системе оставался старый v1.0.0.
+            * 🏷️ **Динамический бейдж версии:** В шапке окна и в каждой строке лога крупно отображается точная версия программы (`[PC v1.0.7]`).
             * 🛡️ **Виджет сервисов ТСПУ:** На главной странице отображается доступность YouTube 4K, Discord Voice, Telegram SOS, AI ChatGPT, Insta и Банков РФ.
             * 🌐 **URL Тест (HTTP 204):** Замер реальной задержки веб-трафика через Cloudflare 204.
             * 📶 **Автосортировка по пингу:** Лучшие сервера всегда сверху списка.
@@ -135,11 +136,11 @@ jobs:
             ---
 
             ### 📦 Скачать:
-            * 📥 **Установщик (Installer):** [BunkerVPN-Windows-v1.0.6-Setup.exe](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.6/BunkerVPN-Windows-v1.0.6-Setup.exe)
-            * 🧰 **Портативная версия (Portable ZIP):** [BunkerVPN-Windows-v1.0.6-Portable.zip](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.6/BunkerVPN-Windows-v1.0.6-Portable.zip)
+            * 📥 **Установщик (Installer):** [BunkerVPN-Windows-v1.0.7-Setup.exe](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.7/BunkerVPN-Windows-v1.0.7-Setup.exe)
+            * 🧰 **Портативная версия (Portable ZIP):** [BunkerVPN-Windows-v1.0.7-Portable.zip](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.7/BunkerVPN-Windows-v1.0.7-Portable.zip)
           files: |
-            dist/BunkerVPN-Windows-v1.0.6-Setup.exe
-            dist/BunkerVPN-Windows-v1.0.6-Portable.zip
+            dist/BunkerVPN-Windows-v1.0.7-Setup.exe
+            dist/BunkerVPN-Windows-v1.0.7-Portable.zip
             dist/bunkervpn_smoke_test.png
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
