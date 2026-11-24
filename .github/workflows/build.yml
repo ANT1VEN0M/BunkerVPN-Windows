@@ -90,7 +90,7 @@ jobs:
       - name: Create Portable ZIP
         shell: pwsh
         run: |
-          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.11-Portable.zip -CompressionLevel Optimal
+          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.12-Portable.zip -CompressionLevel Optimal
 
       - name: Compile Inno Setup Installer
         shell: pwsh
@@ -107,41 +107,39 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: BunkerVPN-Windows-v1.0.11
+          name: BunkerVPN-Windows-v1.0.12
           path: |
-            dist\BunkerVPN-Windows-v1.0.11-Setup.exe
-            dist\BunkerVPN-Windows-v1.0.11-Portable.zip
+            dist\BunkerVPN-Windows-v1.0.12-Setup.exe
+            dist\BunkerVPN-Windows-v1.0.12-Portable.zip
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         with:
-          tag_name: v1.0.11
-          name: BunkerVPN for Windows v1.0.11 ⚡ Ultra-Speed & Anti-Freeze Hotfix
+          tag_name: v1.0.12
+          name: BunkerVPN for Windows v1.0.12 🩺 Diagnostic Logs & Real TLS-Ping Edition
           body: |
-            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.11)
+            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.12)
             
-            ⚡ Комплексный хотфикс стабильности, скорости и интерфейса по отзывам подписчиков!
+            ⚡ Обновление стабильности, экспорта логов и устранения ложного TCP-пинга по отзывам подписчиков!
 
             ---
 
-            ### 🚀 Что нового в v1.0.11:
-            * 🛡️ **Полное устранение зависаний при отключении (Anti-Freeze):**
-              - Процесс отключения переведён в полностью асинхронный фоновый поток (`Task.Run`). Интерфейс больше никогда не замирает и не блокируется.
-              - Кнопка отключения мгновенно переходит в статус `ОТКЛЮЧЕНИЕ...` с блокировкой повторных кликов.
-              - Безопасная очистка системных прокси WinINet без зависания UI-потока.
-            * ⚡ **Ультра-скорость и моментальная отправка сообщений (Zero-Lag):**
-              - Фиксированный безопасный MTU `1360` (полная защита от дропа пакетов и задержек в Telegram/Discord).
-              - Переход на `stack: "mixed"` (высокоскоростной gVisor для TCP + нативный стек для UDP).
-              - Отключён `strict_route`, вызывавший конфликты шлюзов и задержки.
-              - Раздельный DNS: защищённый DoH `https://76.76.2.11/p0` через прокси-туннель для зарубежных сервисов (защита от DNS-отравления провайдеров).
-            * 🔄 **Фикс встроенного обновления:**
-              - Таймаут загрузки инсталлера в `UpdateService` увеличен до 10 минут (устранена ошибка `HttpClient.Timeout`).
-            * 🎨 **Редизайн и улучшение отображения:**
-              - Устранена дубликация пинга в названии серверов (`CleanName`).
-              - Новая плавная кнопка «ПОДКЛЮЧИТЬ / ОТКЛЮЧИТЬ» с закруглением 14px и неоновым свечением.
-              - Включено аппаратное сглаживание шрифтов (`ClearType` / `Display`).
-              - Полноценный ресайз окна мышкой и кнопка максимизации `🗖`.
+            ### 🚀 Что нового в v1.0.12:
+            * 🩺 **Сохранение и экспорт логов для диагностики:**
+              - Добавлена кнопка «💾 В файл» на вкладке «Консоль / Логи» — сохранение полного диагностического отчёта в `.txt`.
+              - Добавлена кнопка «📋 Копировать» — моментальное копирование всех логов в буфер обмена для быстрой отправки в Telegram (Ctrl+V).
+              - Добавлена кнопка «📂 Папка» — быстрый переход к системной папке логов в Проводнике Windows (`%APPDATA%\BunkerVPN\logs`).
+              - Фоновое автосохранение всех системных сообщений, событий туннеля и ядра sing-box в постоянный файл `bunker_vpn.log` с ротацией.
+            * 🛡️ **Устранён ложный TCP-пинг (Real TLS Handshake Ping):**
+              - Заменён «слепой» TCP-коннект (который показывал 15 мс на неработающих серверах с просто открытым 443 портом) на реальный TLS Handshake с проверкой SNI.
+              - Неработающие серверы теперь гарантированно получают статус `Недоступен` (`—`) и убираются в конец списка.
+              - Автовыбор сервера подключает только 100% живые узлы с реальным положительным пингом!
+            * 👑 **Новый VIP-фид в подписках:**
+              - В список подписок добавлен выделенный фид «👑 Золотая Выборка VIP» (VLESS Reality & Hysteria 2).
+            * ⚡ **Чистая конфигурация Sing-box 1.11+:**
+              - Маршрутизация DNS переведена на современный экшен `action: "hijack-dns"` без устаревших специальных аутбаундов.
+              - Двойной отказоустойчивый DoH резолвер (`76.76.2.11` + `1.1.1.1`) через прокси для защиты от цензуры и отравления DNS.
 
             ---
 

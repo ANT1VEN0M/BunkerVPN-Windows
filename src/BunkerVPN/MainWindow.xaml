@@ -746,10 +746,52 @@
                         </Grid.RowDefinitions>
 
                         <Grid Grid.Row="0" Margin="0,0,0,12">
-                            <TextBlock Text="Консоль ядра sing-box" Foreground="{StaticResource TextPrimaryBrush}"
-                                       FontWeight="Bold" FontSize="16" VerticalAlignment="Center" />
-                            <Button Click="ClearLogs_Click" HorizontalAlignment="Right"
-                                    Style="{StaticResource BunkerButtonStyle}" Content="Очистить" Height="32" Padding="12,0" />
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock Text="Консоль и логи ядра" Foreground="{StaticResource TextPrimaryBrush}"
+                                           FontWeight="Bold" FontSize="16" />
+                                <TextBlock Text="Автосохранение в файл для отправки разработчику"
+                                           Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,2,0,0" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Click="ExportLogs_Click" Margin="0,0,8,0"
+                                        Style="{StaticResource BunkerAccentButtonStyle}" Height="32" Padding="12,0"
+                                        ToolTip="Сохранить полный отчет в текстовый файл (.txt)">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="💾" Margin="0,0,6,0" />
+                                        <TextBlock Text="В файл" />
+                                    </StackPanel>
+                                </Button>
+                                <Button Click="CopyLogs_Click" Margin="0,0,8,0"
+                                        Style="{StaticResource BunkerButtonStyle}" Height="32" Padding="12,0"
+                                        ToolTip="Скопировать все логи в буфер обмена">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="📋" Margin="0,0,6,0" />
+                                        <TextBlock Text="Копировать" />
+                                    </StackPanel>
+                                </Button>
+                                <Button Click="OpenLogsFolder_Click" Margin="0,0,8,0"
+                                        Style="{StaticResource BunkerButtonStyle}" Height="32" Padding="12,0"
+                                        ToolTip="Открыть папку с логами в Проводнике">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="📂" Margin="0,0,6,0" />
+                                        <TextBlock Text="Папка" />
+                                    </StackPanel>
+                                </Button>
+                                <Button Click="ClearLogs_Click"
+                                        Style="{StaticResource BunkerButtonStyle}" Height="32" Padding="12,0"
+                                        ToolTip="Очистить окно вывода логов">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="🗑️" Margin="0,0,6,0" />
+                                        <TextBlock Text="Очистить" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
                         </Grid>
 
                         <Border Grid.Row="1" Background="#0A0B0E" BorderBrush="{StaticResource BorderBrush}"

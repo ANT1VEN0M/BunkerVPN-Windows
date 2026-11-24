@@ -59,11 +59,6 @@ namespace BunkerVPN.Services
                 {
                     ["type"] = "direct",
                     ["tag"] = "direct"
-                },
-                new Dictionary<string, object>
-                {
-                    ["type"] = "dns",
-                    ["tag"] = "dns-out"
                 }
             };
 
@@ -72,7 +67,7 @@ namespace BunkerVPN.Services
                 new Dictionary<string, object>
                 {
                     ["protocol"] = "dns",
-                    ["outbound"] = "dns-out"
+                    ["action"] = "hijack-dns"
                 },
                 new Dictionary<string, object>
                 {
@@ -189,6 +184,13 @@ namespace BunkerVPN.Services
                         new Dictionary<string, object>
                         {
                             ["tag"] = "dns-remote",
+                            ["address"] = "https://76.76.2.11/p0",
+                            ["address_resolver"] = "dns-direct",
+                            ["detour"] = "proxy"
+                        },
+                        new Dictionary<string, object>
+                        {
+                            ["tag"] = "dns-remote-fallback",
                             ["address"] = $"https://{settings.PrimaryDns}/dns-query",
                             ["address_resolver"] = "dns-direct",
                             ["detour"] = "proxy"

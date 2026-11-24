@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.NetworkInformation;
+using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 using BunkerVPN.Models;
@@ -35,6 +37,34 @@ namespace BunkerVPN.Services
                 // Timeout or network error
             }
             return -1;
+        }
+
+        public static async Task<int> TestTlsHandshakePingAsync(string host, int port, string? sni = null, int timeoutMs = 1800)
+        {
+            if (string.IsNullOrWhiteSpace(host) || port <= 0) return -1;
+
+            var sw = Stopwatch.StartNew();
+            using var client = new TcpClient();
+            using var cts = new CancellationTokenSource(timeoutMs);
+
+            try
+            {
+                await client.ConnectAsync(host, port, cts.Token);
+                using var ssl = new SslStream(client.GetStream(), false, (sender, cert, chain, errors) => true);
+                var targetHost = !string.IsNullOrWhiteSpace(sni) ? sni : host;
+                var sslOptions = new SslClientAuthenticationOptions
+                {
+                    TargetHost = targetHost,
+                    EnabledSslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13
+                };
+                await ssl.AuthenticateAsClientAsync(sslOptions, cts.Token);
+                sw.Stop();
+                return (int)sw.ElapsedMilliseconds;
+            }
+            catch
+            {
+                return -1;
+            }
         }
 
         public static async Task<int> TestTcpPingAsync(string host, int port, int timeoutMs = 1500)
@@ -77,25 +107,35 @@ namespace BunkerVPN.Services
             return -1;
         }
 
-        public static async Task<int> TestNodePingAsync(ServerNode node, int timeoutMs = 1500)
+        public static async Task<int> TestNodePingAsync(ServerNode node, int timeoutMs = 1800)
         {
             if (string.IsNullOrWhiteSpace(node.Server)) return -1;
 
-            // WireGuard / Cloudflare WARP uses UDP. ICMP ping is fastest and accurate for measuring latency.
+            // WireGuard / Cloudflare WARP uses UDP
             if (node.Protocol.Equals("WireGuard", StringComparison.OrdinalIgnoreCase) || node.IsWarp)
             {
                 var icmp = await TestIcmpPingAsync(node.Server, timeoutMs);
                 if (icmp > 0) return icmp;
+                return await TestTcpPingAsync(node.Server, node.Port > 0 ? node.Port : 880, timeoutMs);
             }
 
-            // TCP connect test for VLESS, Trojan, Shadowsocks, Hysteria2
+            // Real TLS Handshake check for VLESS, Trojan, Reality, Hysteria 2
+            // This eliminates fake TCP pings on dead servers where port 443 is open but proxy doesn't work
             if (node.Port > 0)
             {
-                var tcp = await TestTcpPingAsync(node.Server, node.Port, timeoutMs);
-                if (tcp > 0) return tcp;
+                var tlsPing = await TestTlsHandshakePingAsync(node.Server, node.Port, node.Sni, timeoutMs);
+                if (tlsPing > 0) return tlsPing;
+
+                // For Shadowsocks, fall back to TCP ping
+                if (node.Protocol.Equals("Shadowsocks", StringComparison.OrdinalIgnoreCase))
+                {
+                    return await TestTcpPingAsync(node.Server, node.Port, timeoutMs);
+                }
+
+                // If TLS handshake failed on a TLS/Reality node, it is dead
+                return -1;
             }
 
-            // Fallback to ICMP ping if TCP connection was dropped
             return await TestIcmpPingAsync(node.Server, timeoutMs);
         }
 

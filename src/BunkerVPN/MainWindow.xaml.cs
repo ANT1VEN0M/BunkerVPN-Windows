@@ -160,6 +160,70 @@ namespace BunkerVPN
             ViewModel.Settings.Save();
         }
 
+        private void ExportLogs_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sfd = new Microsoft.Win32.SaveFileDialog
+                {
+                    FileName = $"BunkerVPN_Logs_{DateTime.Now:yyyyMMdd_HHmm}.txt",
+                    Filter = "Текстовые файлы (*.txt)|*.txt|Все файлы (*.*)|*.*",
+                    Title = "Сохранение логов Бункер Кота VPN"
+                };
+
+                if (sfd.ShowDialog() == true)
+                {
+                    LogService.ExportLogs(sfd.FileName);
+                    MessageBox.Show(
+                        $"Логи успешно сохранены в файл:\n{sfd.FileName}\n\nВы можете передать этот файл создателю или в поддержку Бункера!",
+                        "Логи сохранены",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при экспорте логов: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void CopyLogs_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var logsText = LogService.GetAllLogsText();
+                Clipboard.SetText(logsText);
+                MessageBox.Show(
+                    "Все логи скопированы в буфер обмена!\nВы можете вставить их в Telegram (Ctrl+V) и отправить разработчику.",
+                    "Логи скопированы",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Не удалось скопировать логи: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void OpenLogsFolder_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var folder = LogService.GetLogsFolder();
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = folder,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Не удалось открыть папку с логами: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void ClearLogs_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.Logs.Clear();

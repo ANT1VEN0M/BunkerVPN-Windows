@@ -163,18 +163,7 @@ namespace BunkerVPN.ViewModels
                     OnPropertyChanged(nameof(GameBoosterBadgeForeground));
                     OnPropertyChanged(nameof(GameBoosterDescText));
                     OnPropertyChanged(nameof(DiscordStatusText));
-                    try
-                    {
-                        System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
-                        {
-                            Logs.Add(value ? "🎮 Game Booster: ВКЛЮЧЕН (Full-Cone UDP • MTU 1340 • Bypass CS2/Dota/Steam)" : "🎮 Game Booster: ВЫКЛЮЧЕН");
-                            if (Logs.Count > 200) Logs.RemoveAt(0);
-                        });
-                    }
-                    catch
-                    {
-                        // Ignore UI thread errors
-                    }
+                    AddLog(value ? "🎮 Game Booster: ВКЛЮЧЕН (Full-Cone UDP • MTU 1340 • Bypass CS2/Dota/Steam)" : "🎮 Game Booster: ВЫКЛЮЧЕН");
                 }
             }
         }
@@ -311,9 +300,30 @@ namespace BunkerVPN.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        public void AddLog(string message)
+        {
+            LogService.Log(message);
+            try
+            {
+                var app = System.Windows.Application.Current;
+                if (app != null)
+                {
+                    app.Dispatcher.Invoke(() =>
+                    {
+                        Logs.Add($"[{DateTime.Now:HH:mm:ss}] {message}");
+                        if (Logs.Count > 300) Logs.RemoveAt(0);
+                    });
+                }
+            }
+            catch
+            {
+                // Ignore UI dispatcher exceptions on shutdown
+            }
+        }
+
         public MainViewModel()
         {
-            Logs.Add($"[+] BunkerVPN PC v{UpdateService.CurrentVersion} started");
+            AddLog($"[+] BunkerVPN PC v{UpdateService.CurrentVersion} started");
 
             _durationTimer.Interval = TimeSpan.FromSeconds(1);
             _durationTimer.Tick += (s, e) =>
@@ -324,16 +334,12 @@ namespace BunkerVPN.ViewModels
 
             _coreManager.LogReceived += log =>
             {
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                {
-                    Logs.Add($"[{DateTime.Now:HH:mm:ss}] {log}");
-                    if (Logs.Count > 200) Logs.RemoveAt(0);
-                });
+                AddLog(log);
             };
 
             _coreManager.CoreExited += () =>
             {
-                System.Windows.Application.Current.Dispatcher.Invoke(async () =>
+                System.Windows.Application.Current?.Dispatcher.Invoke(async () =>
                 {
                     if (IsConnected && !IsDisconnecting)
                     {
@@ -397,7 +403,7 @@ namespace BunkerVPN.ViewModels
             }
             catch (Exception ex)
             {
-                Logs.Add($"[-] Subscription update failed: {ex.Message}");
+                AddLog($"[-] Subscription update failed: {ex.Message}");
             }
             finally
             {
@@ -485,7 +491,7 @@ namespace BunkerVPN.ViewModels
         {
             if (SelectedServer == null)
             {
-                Logs.Add("[-] Сервер для подключения не выбран.");
+                AddLog("[-] Сервер для подключения не выбран.");
                 return;
             }
 
@@ -537,7 +543,7 @@ namespace BunkerVPN.ViewModels
             }
             catch (Exception ex)
             {
-                Logs.Add($"[-] Ошибка при отключении: {ex.Message}");
+                AddLog($"[-] Ошибка при отключении: {ex.Message}");
             }
             finally
             {
@@ -572,7 +578,7 @@ namespace BunkerVPN.ViewModels
                 if (latency > 0)
                 {
                     UrlTestResult = $"{latency} ms (204)";
-                    Logs.Add($"[+] URL Test 204: {latency} ms (Cloudflare)");
+                    AddLog($"[+] URL Test 204: {latency} ms (Cloudflare)");
                 }
                 else
                 {
@@ -580,19 +586,19 @@ namespace BunkerVPN.ViewModels
                     if (fallback > 0)
                     {
                         UrlTestResult = $"{fallback} ms (Google)";
-                        Logs.Add($"[+] URL Test 204: {fallback} ms (Google)");
+                        AddLog($"[+] URL Test 204: {fallback} ms (Google)");
                     }
                     else
                     {
                         UrlTestResult = "Таймаут";
-                        Logs.Add("[-] URL Test: timeout/unreachable");
+                        AddLog("[-] URL Test: таймаут / трафик не проходит. Возможно, данный узел временно перегружен или заблокирован ТСПУ. Попробуйте другой сервер из списка!");
                     }
                 }
             }
             catch (Exception ex)
             {
                 UrlTestResult = "Ошибка";
-                Logs.Add($"[-] URL Test error: {ex.Message}");
+                AddLog($"[-] URL Test error: {ex.Message}");
             }
             finally
             {
@@ -611,27 +617,28 @@ namespace BunkerVPN.ViewModels
                 {
                     if (Settings.AutoSortByPing)
                     {
-                        System.Windows.Application.Current.Dispatcher.Invoke(FilterServers);
+                        System.Windows.Application.Current?.Dispatcher.Invoke(FilterServers);
                     }
                 });
 
                 if (Settings.AutoSortByPing)
                 {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    System.Windows.Application.Current?.Dispatcher.Invoke(() =>
                     {
                         SortServersByPing();
 
-                        // If not currently connected, select lowest ping server
-                        if (!IsConnected && FilteredServers.Count > 0 && FilteredServers[0].PingMs > 0)
+                        // If not currently connected, select lowest ping LIVE server
+                        var liveServers = FilteredServers.Where(s => s.PingMs > 0).ToList();
+                        if (!IsConnected && liveServers.Count > 0)
                         {
-                            SelectedServer = FilteredServers[0];
+                            SelectedServer = liveServers[0];
                         }
                     });
                 }
             }
             catch (Exception ex)
             {
-                Logs.Add($"[-] Ping test error: {ex.Message}");
+                AddLog($"[-] Ping test error: {ex.Message}");
             }
             finally
             {

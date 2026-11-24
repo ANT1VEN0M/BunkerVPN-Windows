@@ -31,6 +31,7 @@ namespace BunkerVPN.Models
         public string Protocol { get; set; } = "VLESS";
         public string Server { get; set; } = "";
         public int Port { get; set; } = 443;
+        public string Sni { get; set; } = "";
 
         private int _pingMs = -1;
         public int PingMs
@@ -162,6 +163,15 @@ namespace BunkerVPN.Models
                 {
                     node.Server = hostPort;
                 }
+            }
+
+            var qMarkIdx = uri.IndexOf('?');
+            if (qMarkIdx >= 0)
+            {
+                var endQ = uri.IndexOf('#', qMarkIdx);
+                var queryPart = endQ >= 0 ? uri.Substring(qMarkIdx, endQ - qMarkIdx) : uri.Substring(qMarkIdx);
+                var query = HttpUtility.ParseQueryString(queryPart);
+                node.Sni = query["sni"] ?? "";
             }
 
             // Extract Country / Flag from Name

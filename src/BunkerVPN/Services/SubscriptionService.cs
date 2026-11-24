@@ -23,6 +23,7 @@ namespace BunkerVPN.Services
 
         public static readonly List<BunkerFeedItem> DefaultFeeds = new()
         {
+            new() { Title = "👑 Золотая Выборка VIP", Description = "Протестированные TOP-серверы VLESS Reality & Hysteria 2 с максимальной скоростью", Url = "https://raw.githubusercontent.com/ANT1VEN0M/Bunker-Auto-Engine/main/sub/gold.txt", Icon = "👑" },
             new() { Title = "Мировой Микс (YouTube / DPI)", Description = "70 проверенных серверов + WARP для всех заблокированных сайтов", Url = "https://raw.githubusercontent.com/ANT1VEN0M/Bunker-Auto-Engine/main/sub/mix.txt", Icon = "🌍" },
             new() { Title = "Discord Voice & Gaming", Description = "Full-Cone UDP для мгновенного подключения голосовых каналов Discord", Url = "https://raw.githubusercontent.com/ANT1VEN0M/Bunker-Auto-Engine/main/sub/discord.txt", Icon = "🎮" },
             new() { Title = "Турбо-серверы (Минимальный пинг)", Description = "Быстрые сервера с минимальной задержкой для игр и стриминга", Url = "https://raw.githubusercontent.com/ANT1VEN0M/Bunker-Auto-Engine/main/sub/fast.txt", Icon = "⚡" },
