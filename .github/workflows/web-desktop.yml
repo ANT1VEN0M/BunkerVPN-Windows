@@ -107,8 +107,9 @@ jobs:
           & $tvnExe -controlapp -set-allowloopback 1 -ErrorAction SilentlyContinue
           
           Write-Host "[+] Starting Websockify bridge (Port 6080 -> 5900)..."
-          $wsLog = "$env:TEMP\websockify.log"
-          Start-Process python -ArgumentList "-m websockify --web C:\noVNC 0.0.0.0:6080 127.0.0.1:5900" -RedirectStandardOutput $wsLog -RedirectStandardError $wsLog -WindowStyle Hidden
+          $wsOut = "$env:TEMP\websockify_out.log"
+          $wsErr = "$env:TEMP\websockify_err.log"
+          Start-Process python -ArgumentList "-m websockify --web C:\noVNC 0.0.0.0:6080 127.0.0.1:5900" -RedirectStandardOutput $wsOut -RedirectStandardError $wsErr -WindowStyle Hidden
           Start-Sleep -Seconds 3
           
           # Verify local connectivity before launching tunnel
