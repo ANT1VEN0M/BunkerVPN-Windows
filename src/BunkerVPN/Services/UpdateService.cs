@@ -101,32 +101,52 @@ namespace BunkerVPN.Services
         {
             var tempSetup = Path.Combine(Path.GetTempPath(), "BunkerVPN_Setup_Update.exe");
 
-            var targetUrl = downloadUrl.StartsWith("https://github.com", StringComparison.OrdinalIgnoreCase)
-                ? $"https://ghfast.top/{downloadUrl}"
-                : downloadUrl;
-
-            using var resp = await DownloadClient.GetAsync(targetUrl, HttpCompletionOption.ResponseHeadersRead);
-            resp.EnsureSuccessStatusCode();
-
-            var totalBytes = resp.Content.Headers.ContentLength ?? -1L;
-            using var stream = await resp.Content.ReadAsStreamAsync();
-            using var fs = new FileStream(tempSetup, FileMode.Create, FileAccess.Write, FileShare.None);
-
-            var buffer = new byte[81920];
-            long totalRead = 0;
-            int read;
-            while ((read = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            var candidateMirrors = new List<string>();
+            if (downloadUrl.StartsWith("https://github.com", StringComparison.OrdinalIgnoreCase))
             {
-                await fs.WriteAsync(buffer, 0, read);
-                totalRead += read;
-                if (totalBytes > 0 && progress != null)
+                candidateMirrors.Add($"https://ghfast.top/{downloadUrl}");
+                candidateMirrors.Add($"https://mirror.ghproxy.com/{downloadUrl}");
+            }
+            candidateMirrors.Add(downloadUrl);
+
+            Exception? lastEx = null;
+            foreach (var targetUrl in candidateMirrors)
+            {
+                try
                 {
-                    var pct = (int)((totalRead * 100) / totalBytes);
-                    progress.Report(pct);
+                    using var resp = await DownloadClient.GetAsync(targetUrl, HttpCompletionOption.ResponseHeadersRead);
+                    resp.EnsureSuccessStatusCode();
+
+                    var totalBytes = resp.Content.Headers.ContentLength ?? -1L;
+                    using var stream = await resp.Content.ReadAsStreamAsync();
+                    using var fs = new FileStream(tempSetup, FileMode.Create, FileAccess.Write, FileShare.None);
+
+                    var buffer = new byte[81920];
+                    long totalRead = 0;
+                    int read;
+                    while ((read = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                    {
+                        await fs.WriteAsync(buffer, 0, read);
+                        totalRead += read;
+                        if (totalBytes > 0 && progress != null)
+                        {
+                            var pct = (int)((totalRead * 100) / totalBytes);
+                            progress.Report(pct);
+                        }
+                    }
+
+                    if (File.Exists(tempSetup) && new FileInfo(tempSetup).Length > 1000000)
+                    {
+                        return tempSetup;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    lastEx = ex;
                 }
             }
 
-            return tempSetup;
+            throw lastEx ?? new InvalidOperationException("Не удалось скачать файл обновления ни с одного зеркала");
         }
 
         public void LaunchInstallerAndExit(string installerPath)

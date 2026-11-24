@@ -63,31 +63,52 @@ jobs:
           Write-Host "[+] Installing TightVNC..."
           choco install tightvnc -y
           
+          Write-Host "[+] Stopping any default tvnserver services..."
+          Stop-Service tvnserver -ErrorAction SilentlyContinue
+          Get-Process tvnserver -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+          
           Write-Host "[+] Installing websockify & downloading noVNC..."
           pip install websockify
           git clone --depth 1 https://github.com/novnc/noVNC.git C:\noVNC
           
-          Write-Host "[+] Configuring TightVNC (passwordless access for 1-tap connection)..."
-          New-Item -Path "HKLM:\Software\TightVNC\Server" -Force | Out-Null
-          Set-ItemProperty -Path "HKLM:\Software\TightVNC\Server" -Name "UseVncAuthentication" -Value 0 -Type DWord
-          Set-ItemProperty -Path "HKLM:\Software\TightVNC\Server" -Name "AllowLoopback" -Value 1 -Type DWord
-          Set-ItemProperty -Path "HKLM:\Software\TightVNC\Server" -Name "AcceptHttpConnections" -Value 1 -Type DWord
-          New-Item -Path "HKCU:\Software\TightVNC\Server" -Force | Out-Null
-          Set-ItemProperty -Path "HKCU:\Software\TightVNC\Server" -Name "UseVncAuthentication" -Value 0 -Type DWord
-          Set-ItemProperty -Path "HKCU:\Software\TightVNC\Server" -Name "AllowLoopback" -Value 1 -Type DWord
-          Set-ItemProperty -Path "HKCU:\Software\TightVNC\Server" -Name "AcceptHttpConnections" -Value 1 -Type DWord
+          Write-Host "[+] Configuring TightVNC (AllowLoopback and passwordless in all registry hives)..."
+          $regPaths = @(
+              "HKLM:\Software\TightVNC\Server",
+              "HKLM:\Software\Wow6432Node\TightVNC\Server",
+              "HKCU:\Software\TightVNC\Server",
+              "HKCU:\Software\Wow6432Node\TightVNC\Server"
+          )
+          foreach ($p in $regPaths) {
+              if (-not (Test-Path $p)) {
+                  New-Item -Path $p -Force | Out-Null
+              }
+              Set-ItemProperty -Path $p -Name "UseVncAuthentication" -Value 0 -Type DWord
+              Set-ItemProperty -Path $p -Name "AllowLoopback" -Value 1 -Type DWord
+              Set-ItemProperty -Path $p -Name "LoopbackOnly" -Value 0 -Type DWord
+              Set-ItemProperty -Path $p -Name "AcceptHttpConnections" -Value 1 -Type DWord
+              Set-ItemProperty -Path $p -Name "EnableUrlPaste" -Value 1 -Type DWord
+              Set-ItemProperty -Path $p -Name "DisconnectAction" -Value 0 -Type DWord
+          }
 
       - name: Start VNC Server, Websockify & BunkerVPN
         shell: pwsh
         run: |
+          Write-Host "[+] Locating tvnserver executable..."
+          $tvnExe = if (Test-Path "C:\Program Files\TightVNC\tvnserver.exe") { "C:\Program Files\TightVNC\tvnserver.exe" } else { "C:\Program Files (x86)\TightVNC\tvnserver.exe" }
+          
+          Write-Host "[+] Applying runtime loopback allowance via command line..."
+          & $tvnExe -controlservice -set-allowloopback 1 -ErrorAction SilentlyContinue
+          & $tvnExe -controlapp -set-allowloopback 1 -ErrorAction SilentlyContinue
+          
           Write-Host "[+] Starting TightVNC Server in User Mode..."
-          Stop-Service tvnserver -ErrorAction SilentlyContinue
-          Start-Process "C:\Program Files\TightVNC\tvnserver.exe" -ArgumentList "-run"
+          Start-Process $tvnExe -ArgumentList "-run"
           Start-Sleep -Seconds 3
+          
+          & $tvnExe -controlapp -set-allowloopback 1 -ErrorAction SilentlyContinue
           
           Write-Host "[+] Starting Websockify bridge (Port 6080 -> 5900)..."
           Start-Process python -ArgumentList "-m websockify --web C:\noVNC 6080 127.0.0.1:5900" -WindowStyle Hidden
-          Start-Sleep -Seconds 2
+          Start-Sleep -Seconds 3
           
           Write-Host "[+] Launching BunkerVPN.exe on desktop..."
           Start-Process -FilePath "publish\BunkerVPN.exe"
