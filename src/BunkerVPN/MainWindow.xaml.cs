@@ -35,13 +35,34 @@ namespace BunkerVPN
         {
             if (e.ChangedButton == MouseButton.Left)
             {
-                DragMove();
+                if (e.ClickCount == 2)
+                {
+                    WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+                }
+                else
+                {
+                    DragMove();
+                }
             }
         }
 
         private void Minimize_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
+        }
+
+        private void Maximize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        }
+
+        protected override void OnStateChanged(EventArgs e)
+        {
+            base.OnStateChanged(e);
+            if (TxtMaximizeIcon != null)
+            {
+                TxtMaximizeIcon.Text = WindowState == WindowState.Maximized ? "❐" : "🗖";
+            }
         }
 
         private void Close_Click(object sender, RoutedEventArgs e)

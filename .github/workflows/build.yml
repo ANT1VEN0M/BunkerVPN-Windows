@@ -90,7 +90,7 @@ jobs:
       - name: Create Portable ZIP
         shell: pwsh
         run: |
-          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.9-Portable.zip -CompressionLevel Optimal
+          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.10-Portable.zip -CompressionLevel Optimal
 
       - name: Compile Inno Setup Installer
         shell: pwsh
@@ -107,41 +107,41 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: BunkerVPN-Windows-v1.0.9
+          name: BunkerVPN-Windows-v1.0.10
           path: |
-            dist\BunkerVPN-Windows-v1.0.9-Setup.exe
-            dist\BunkerVPN-Windows-v1.0.9-Portable.zip
+            dist\BunkerVPN-Windows-v1.0.10-Setup.exe
+            dist\BunkerVPN-Windows-v1.0.10-Portable.zip
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         with:
-          tag_name: v1.0.9
-          name: BunkerVPN for Windows v1.0.9 ⚡ GeoIP/GeoSite Hotfix & Instant Start
+          tag_name: v1.0.10
+          name: BunkerVPN for Windows v1.0.10 🪟 Window Resize & Maximize Edition
           body: |
-            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.9 Hotfix)
+            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.10)
             
-            ⚡ Критический хотфикс запуска ядра sing-box 1.11+: устранено мигание кнопки «Подключить» и зависимость от внешних баз GeoIP/GeoSite!
+            ⚡ Обновление по отзывам подписчиков: добавлена полноценная поддержка изменения размера окна, кнопка максимизации и двойной клик по шапке!
 
             ---
 
-            ### 🚀 Что исправлено в v1.0.9 Hotfix:
-            * 🛡️ **Фикс мгновенного отключения («мигает и не запускается»):** 
-              - Sing-box 1.11+ по умолчанию падал с ошибкой при наличии правил GeoIP/GeoSite без флагов совместимости.
-              - Внедрены переменные окружения `ENABLE_DEPRECATED_GEOIP=true` и `ENABLE_DEPRECATED_GEOSITE=true`.
-              - Вся маршрутизация обхода РФ и игровых сервисов переведена на мгновенные нативные списки `domain_suffix` — клиенту больше не нужно скачивать 50 МБ баз из заблокированного GitHub! Запуск происходит за 0.00 секунды в 100% офлайн-режиме.
-            * 🎮 **Сохранены все геймерские оптимизации:**
-              - Full-Cone NAT (`endpoint_independent_nat: true`) и MTU `1340` для Discord Voice и Brawl Stars.
-              - Раздельный роутинг игр (CS2, Dota 2, Steam CDN — напрямую с пингом 5-15 мс).
+            ### 🚀 Что нового в v1.0.10:
+            * 🪟 **Изменение размера окна (Window Resize):**
+              - Добавлена кнопка «Развернуть / Восстановить» (`🗖` / `❐`) в заголовок окна.
+              - Поддержка разворачивания окна на весь экран по двойному клику на шапку.
+              - Свободное изменение размера окна за рамки и правый нижний угол (`CanResizeWithGrip`).
+            * 🛡️ **Все фиксы ядра sing-box 1.11+:**
+              - 100% стабильный мгновенный запуск без падений и зависимости от баз GeoIP.
+              - Игровой режим Game Booster & Discord Fix (Full-Cone NAT, MTU 1340).
 
             ---
 
             ### 📦 Скачать:
-            * 📥 **Установщик (Installer):** [BunkerVPN-Windows-v1.0.9-Setup.exe](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.9/BunkerVPN-Windows-v1.0.9-Setup.exe)
-            * 🧰 **Портативная версия (Portable ZIP):** [BunkerVPN-Windows-v1.0.9-Portable.zip](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.9/BunkerVPN-Windows-v1.0.9-Portable.zip)
+            * 📥 **Установщик (Installer):** [BunkerVPN-Windows-v1.0.10-Setup.exe](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.10/BunkerVPN-Windows-v1.0.10-Setup.exe)
+            * 🧰 **Портативная версия (Portable ZIP):** [BunkerVPN-Windows-v1.0.10-Portable.zip](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.10/BunkerVPN-Windows-v1.0.10-Portable.zip)
           files: |
-            dist/BunkerVPN-Windows-v1.0.9-Setup.exe
-            dist/BunkerVPN-Windows-v1.0.9-Portable.zip
+            dist/BunkerVPN-Windows-v1.0.10-Setup.exe
+            dist/BunkerVPN-Windows-v1.0.10-Portable.zip
             dist/bunkervpn_smoke_test.png
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

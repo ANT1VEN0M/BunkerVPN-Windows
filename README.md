@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/latest"><img src="https://img.shields.io/github/v/release/ANT1VEN0M/BunkerVPN-Windows?color=00E676&label=%D0%A0%D0%B5%D0%BB%D0%B8%D0%B7_v1.0.9_Hotfix" alt="Release" /></a>
+  <a href="https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/latest"><img src="https://img.shields.io/github/v/release/ANT1VEN0M/BunkerVPN-Windows?color=00E676&label=%D0%A0%D0%B5%D0%BB%D0%B8%D0%B7_v1.0.10" alt="Release" /></a>
   <img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-00E5FF" alt="Windows" />
   <img src="https://img.shields.io/badge/.NET-8.0%20WPF-7C4DFF" alt=".NET 8" />
   <img src="https://img.shields.io/badge/Core-sing--box%201.11.4-00E676" alt="Sing-box" />
@@ -21,8 +21,12 @@
 
 ---
 
-## ⚡ Главные возможности (Версия v1.0.9 — GeoIP/GeoSite Hotfix)
+## ⚡ Главные возможности (Версия v1.0.10)
 
+* 🪟 **Изменение размера окна (Window Resize & Maximize):**
+  * Добавлена кнопка «Развернуть / Восстановить» (`🗖` / `❐`) в заголовок окна.
+  * Разворачивание окна на весь экран по двойному клику на шапку.
+  * Свободное масштабирование за границы окна и правый нижний угол (`CanResizeWithGrip`).
 * 🛡️ **Фикс вылета при запуске («мигает кнопка подключения и сразу выключается»):**
   * В sing-box 1.11+ правила `geosite`/`geoip` без внешних баз вызывали мгновенное падение ядра.
   * Все списки обхода для РФ и игр переведены на нативные высокоскоростные правила `domain_suffix` — клиенту больше не требуется качать 50 МБ баз с заблокированного GitHub! Старт за 0.00 с в 100% офлайн-режиме.
@@ -51,18 +55,18 @@
 
 ---
 
-## 📦 Скачать BunkerVPN v1.0.9
+## 📦 Скачать BunkerVPN v1.0.10
 
 | Тип загрузки | Прямая ссылка (GitHub) | Зеркало для РФ (без VPN) | Описание |
 | :--- | :---: | :---: | :--- |
-| 📥 **Установщик (Setup.exe)** | [**Скачать Setup v1.0.9**](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.9/BunkerVPN-Windows-v1.0.9-Setup.exe) | [**Зеркало РФ (Setup)**](https://ghfast.top/https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.9/BunkerVPN-Windows-v1.0.9-Setup.exe) | Рекомендуется. Устанавливает программу, создаёт ярлыки на рабочем столе и автозапуск. |
-| 🧰 **Портативная версия (ZIP)** | [**Скачать Portable v1.0.9**](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.9/BunkerVPN-Windows-v1.0.9-Portable.zip) | [**Зеркало РФ (Portable)**](https://ghfast.top/https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.9/BunkerVPN-Windows-v1.0.9-Portable.zip) | Не требует установки. Распакуйте архив в любую папку и запустите `BunkerVPN.exe`. |
+| 📥 **Установщик (Setup.exe)** | [**Скачать Setup v1.0.10**](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.10/BunkerVPN-Windows-v1.0.10-Setup.exe) | [**Зеркало РФ (Setup)**](https://ghfast.top/https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.10/BunkerVPN-Windows-v1.0.10-Setup.exe) | Рекомендуется. Устанавливает программу, создаёт ярлыки на рабочем столе и автозапуск. |
+| 🧰 **Портативная версия (ZIP)** | [**Скачать Portable v1.0.10**](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.10/BunkerVPN-Windows-v1.0.10-Portable.zip) | [**Зеркало РФ (Portable)**](https://ghfast.top/https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.10/BunkerVPN-Windows-v1.0.10-Portable.zip) | Не требует установки. Распакуйте архив в любую папку и запустите `BunkerVPN.exe`. |
 
 ---
 
 ## 🚀 Быстрый старт
 
-1. Скачайте установщик `BunkerVPN-Windows-v1.0.9-Setup.exe` (или распакуйте Portable ZIP).
+1. Скачайте установщик `BunkerVPN-Windows-v1.0.10-Setup.exe` (или распакуйте Portable ZIP).
 2. Запустите приложение (при запросе UAC разрешите запуск от имени администратора для работы драйвера WinTUN).
 3. Нажмите большую оранжевую кнопку **«ПОДКЛЮЧИТЬ»**.
 4. Проверьте задержку серверов на вкладке **«Серверы»** или нажмите **«📶 По пингу»** для автосортировки лучших узлов.

@@ -11,9 +11,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>BunkerVPN</AssemblyName>
     <RootNamespace>BunkerVPN</RootNamespace>
-    <Version>1.0.9</Version>
-    <AssemblyVersion>1.0.9.0</AssemblyVersion>
-    <FileVersion>1.0.9.0</FileVersion>
+    <Version>1.0.10</Version>
+    <AssemblyVersion>1.0.10.0</AssemblyVersion>
+    <FileVersion>1.0.10.0</FileVersion>
     <Authors>Alexander Petrashkevich (KOT ANTIDOT)</Authors>
     <Company>Бункер Кота</Company>
     <Product>BunkerVPN for Windows PC</Product>
