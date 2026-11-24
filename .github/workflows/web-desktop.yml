@@ -70,8 +70,12 @@ jobs:
           Write-Host "[+] Configuring TightVNC (passwordless access for 1-tap connection)..."
           New-Item -Path "HKLM:\Software\TightVNC\Server" -Force | Out-Null
           Set-ItemProperty -Path "HKLM:\Software\TightVNC\Server" -Name "UseVncAuthentication" -Value 0 -Type DWord
+          Set-ItemProperty -Path "HKLM:\Software\TightVNC\Server" -Name "AllowLoopback" -Value 1 -Type DWord
+          Set-ItemProperty -Path "HKLM:\Software\TightVNC\Server" -Name "AcceptHttpConnections" -Value 1 -Type DWord
           New-Item -Path "HKCU:\Software\TightVNC\Server" -Force | Out-Null
           Set-ItemProperty -Path "HKCU:\Software\TightVNC\Server" -Name "UseVncAuthentication" -Value 0 -Type DWord
+          Set-ItemProperty -Path "HKCU:\Software\TightVNC\Server" -Name "AllowLoopback" -Value 1 -Type DWord
+          Set-ItemProperty -Path "HKCU:\Software\TightVNC\Server" -Name "AcceptHttpConnections" -Value 1 -Type DWord
 
       - name: Start VNC Server, Websockify & BunkerVPN
         shell: pwsh
