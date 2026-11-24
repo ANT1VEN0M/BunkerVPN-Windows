@@ -19,7 +19,12 @@ namespace BunkerVPN.Services
     {
         private static readonly HttpClient HttpClient = new()
         {
-            Timeout = TimeSpan.FromSeconds(15)
+            Timeout = TimeSpan.FromSeconds(20)
+        };
+
+        private static readonly HttpClient DownloadClient = new()
+        {
+            Timeout = TimeSpan.FromMinutes(10)
         };
 
         static UpdateService()
@@ -28,9 +33,13 @@ namespace BunkerVPN.Services
             {
                 HttpClient.DefaultRequestHeaders.Add("User-Agent", "BunkerVPN-Windows");
             }
+            if (!DownloadClient.DefaultRequestHeaders.Contains("User-Agent"))
+            {
+                DownloadClient.DefaultRequestHeaders.Add("User-Agent", "BunkerVPN-Windows");
+            }
         }
 
-        public static string CurrentVersion => "1.0.10";
+        public static string CurrentVersion => "1.0.11";
 
         public async Task<UpdateInfo> CheckForUpdatesAsync()
         {
@@ -96,7 +105,7 @@ namespace BunkerVPN.Services
                 ? $"https://ghfast.top/{downloadUrl}"
                 : downloadUrl;
 
-            using var resp = await HttpClient.GetAsync(targetUrl, HttpCompletionOption.ResponseHeadersRead);
+            using var resp = await DownloadClient.GetAsync(targetUrl, HttpCompletionOption.ResponseHeadersRead);
             resp.EnsureSuccessStatusCode();
 
             var totalBytes = resp.Content.Headers.ContentLength ?? -1L;

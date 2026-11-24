@@ -24,15 +24,15 @@ namespace BunkerVPN.Services
                     ["interface_name"] = "bunker-tun",
                     ["address"] = new[] { "172.19.0.1/30", "fdfe:dcba:9876::1/126" },
                     ["auto_route"] = true,
-                    ["strict_route"] = true,
-                    ["stack"] = "system",
+                    ["strict_route"] = false,
+                    ["stack"] = "mixed",
+                    ["mtu"] = settings.GameBoosterMode ? 1340 : 1360,
                     ["sniff"] = true
                 };
 
                 // Game Booster: MTU 1340 avoids UDP fragmentation on LTE/GPON, Full-Cone NAT for Discord Voice & P2P
                 if (settings.GameBoosterMode)
                 {
-                    tunDict["mtu"] = 1340;
                     tunDict["endpoint_independent_nat"] = true;
                     tunDict["udp_timeout"] = 300;
                 }
@@ -190,7 +190,8 @@ namespace BunkerVPN.Services
                         {
                             ["tag"] = "dns-remote",
                             ["address"] = $"https://{settings.PrimaryDns}/dns-query",
-                            ["address_resolver"] = "dns-direct"
+                            ["address_resolver"] = "dns-direct",
+                            ["detour"] = "proxy"
                         },
                         new Dictionary<string, object>
                         {
@@ -203,8 +204,20 @@ namespace BunkerVPN.Services
                     {
                         new Dictionary<string, object>
                         {
-                            ["outbound"] = "any",
+                            ["domain_suffix"] = new[]
+                            {
+                                ".ru", ".su", ".xn--p1ai",
+                                "yandex.ru", "yandex.net", "ya.ru",
+                                "vk.com", "vk.me", "mail.ru",
+                                "sberbank.ru", "sber.ru", "tinkoff.ru", "tbank.ru",
+                                "gosuslugi.ru", "mos.ru", "kinopoisk.ru", "ozon.ru", "wildberries.ru"
+                            },
                             ["server"] = "dns-direct"
+                        },
+                        new Dictionary<string, object>
+                        {
+                            ["outbound"] = "any",
+                            ["server"] = "dns-remote"
                         }
                     },
                     ["strategy"] = "prefer_ipv4"

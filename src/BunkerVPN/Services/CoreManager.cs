@@ -104,15 +104,35 @@ namespace BunkerVPN.Services
             return false;
         }
 
+        public async Task StopAsync()
+        {
+            await Task.Run(() => Stop());
+        }
+
         public void Stop()
         {
             try
             {
                 SystemProxyManager.ClearSystemProxy();
+            }
+            catch
+            {
+                // Ignore proxy clear errors
+            }
 
+            try
+            {
                 if (_coreProcess != null && !_coreProcess.HasExited)
                 {
-                    _coreProcess.Kill(entireProcessTree: true);
+                    try
+                    {
+                        _coreProcess.Kill(entireProcessTree: true);
+                    }
+                    catch
+                    {
+                        // Ignore process kill errors
+                    }
+
                     _coreProcess.WaitForExit(1000);
                     _coreProcess.Dispose();
                 }

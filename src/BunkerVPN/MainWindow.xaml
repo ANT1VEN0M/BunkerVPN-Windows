@@ -6,13 +6,17 @@
         xmlns:vm="clr-namespace:BunkerVPN.ViewModels"
         mc:Ignorable="d"
         Title="Бункер Кота VPN"
-        Height="600" Width="920"
-        MinHeight="540" MinWidth="800"
+        Height="620" Width="940"
+        MinHeight="580" MinWidth="850"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         ResizeMode="CanResizeWithGrip"
         AllowsTransparency="True"
-        Background="Transparent">
+        Background="Transparent"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        RenderOptions.BitmapScalingMode="HighQuality">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
@@ -170,8 +174,8 @@
 
                     <!-- Top Update Notification Banner -->
                     <Border Grid.Row="0" Margin="0,0,0,14"
-                            Background="#181D26" BorderBrush="{StaticResource AccentOrangeBrush}"
-                            BorderThickness="1" CornerRadius="8" Padding="12,10"
+                            Background="#161B26" BorderBrush="{StaticResource AccentOrangeBrush}"
+                            BorderThickness="1" CornerRadius="10" Padding="14,10"
                             Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BoolToVis}}">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -181,14 +185,15 @@
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="🚀" FontSize="20" Margin="0,0,12,0" VerticalAlignment="Center" />
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding UpdateCheckStatus}" Foreground="{StaticResource TextPrimaryBrush}" FontWeight="Bold" FontSize="13" />
+                                <TextBlock Text="{Binding UpdateCheckStatus}" Foreground="{StaticResource TextPrimaryBrush}"
+                                           FontWeight="SemiBold" FontSize="12.5" TextWrapping="Wrap" />
                                 <ProgressBar Value="{Binding UpdateDownloadProgress}" Maximum="100" Height="4"
                                              Visibility="{Binding IsDownloadingUpdate, Converter={StaticResource BoolToVis}}"
-                                             Foreground="{StaticResource AccentOrangeBrush}" Background="#111" Margin="0,4,0,0" />
+                                             Foreground="{StaticResource AccentOrangeBrush}" Background="#111" Margin="0,6,0,0" />
                             </StackPanel>
-                            <Button Grid.Column="2" Click="ApplyUpdate_Click"
+                            <Button Grid.Column="2" Click="ApplyUpdate_Click" Margin="12,0,0,0"
                                     Style="{StaticResource BunkerAccentButtonStyle}"
-                                    Content="Обновить" Height="30" Padding="14,0" VerticalAlignment="Center" />
+                                    Content="Обновить" Height="32" Padding="16,0" VerticalAlignment="Center" />
                         </Grid>
                     </Border>
 
@@ -223,15 +228,11 @@
 
                             <!-- Big Action Button -->
                             <Button Click="ConnectButton_Click"
-                                    Width="220" Height="46"
-                                    Style="{StaticResource BunkerButtonStyle}"
+                                    Width="240" Height="48"
+                                    Style="{StaticResource BunkerMainConnectButtonStyle}"
                                     Background="{Binding ConnectionButtonBackground}"
-                                    BorderThickness="0"
-                                    FontSize="15" FontWeight="Bold" Foreground="#FFFFFF" Cursor="Hand">
-                                <Button.Effect>
-                                    <DropShadowEffect Color="#FF6D00" BlurRadius="18" ShadowDepth="0" Opacity="0.4" />
-                                </Button.Effect>
-                                <TextBlock Text="{Binding ConnectionButtonText}" />
+                                    IsEnabled="{Binding CanToggleConnection}">
+                                <TextBlock Text="{Binding ConnectionButtonText}" FontSize="15" FontWeight="Bold" />
                             </Button>
                         </StackPanel>
 
@@ -390,7 +391,7 @@
 
                                 <!-- Server Details -->
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding SelectedServer.Name, FallbackValue='Сервер не выбран'}"
+                                    <TextBlock Text="{Binding SelectedServer.CleanName, FallbackValue='Сервер не выбран'}"
                                                Foreground="{StaticResource TextPrimaryBrush}"
                                                FontWeight="Bold" FontSize="14" TextTrimming="CharacterEllipsis" />
                                     <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
@@ -527,7 +528,7 @@
                                                    Margin="0,0,12,0" VerticalAlignment="Center" />
 
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding Name}" Foreground="{StaticResource TextPrimaryBrush}"
+                                            <TextBlock Text="{Binding CleanName}" Foreground="{StaticResource TextPrimaryBrush}"
                                                        FontWeight="SemiBold" FontSize="13" TextTrimming="CharacterEllipsis" />
                                             <TextBlock Text="{Binding Server}" Foreground="{StaticResource TextSecondaryBrush}"
                                                        FontSize="11" Margin="0,2,0,0" />

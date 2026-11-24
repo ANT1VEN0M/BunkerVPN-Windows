@@ -69,15 +69,51 @@ namespace BunkerVPN.ViewModels
         public bool IsConnected
         {
             get => _isConnected;
-            set { _isConnected = value; OnPropertyChanged(); OnPropertyChanged(nameof(ConnectionButtonText)); OnPropertyChanged(nameof(ConnectionButtonBackground)); }
+            set
+            {
+                _isConnected = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ConnectionButtonText));
+                OnPropertyChanged(nameof(ConnectionButtonBackground));
+                OnPropertyChanged(nameof(StatusText));
+                OnPropertyChanged(nameof(StatusColor));
+                OnPropertyChanged(nameof(TunnelHealthStatus));
+            }
         }
 
         private bool _isConnecting;
         public bool IsConnecting
         {
             get => _isConnecting;
-            set { _isConnecting = value; OnPropertyChanged(); OnPropertyChanged(nameof(StatusText)); OnPropertyChanged(nameof(StatusColor)); }
+            set
+            {
+                _isConnecting = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(StatusText));
+                OnPropertyChanged(nameof(StatusColor));
+                OnPropertyChanged(nameof(ConnectionButtonText));
+                OnPropertyChanged(nameof(ConnectionButtonBackground));
+                OnPropertyChanged(nameof(CanToggleConnection));
+            }
         }
+
+        private bool _isDisconnecting;
+        public bool IsDisconnecting
+        {
+            get => _isDisconnecting;
+            set
+            {
+                _isDisconnecting = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(StatusText));
+                OnPropertyChanged(nameof(StatusColor));
+                OnPropertyChanged(nameof(ConnectionButtonText));
+                OnPropertyChanged(nameof(ConnectionButtonBackground));
+                OnPropertyChanged(nameof(CanToggleConnection));
+            }
+        }
+
+        public bool CanToggleConnection => !IsDisconnecting;
 
         private bool _isRefreshing;
         public bool IsRefreshing
@@ -192,6 +228,7 @@ namespace BunkerVPN.ViewModels
         {
             get
             {
+                if (IsDisconnecting) return "ОТКЛЮЧЕНИЕ...";
                 if (IsConnecting) return "ПОДКЛЮЧЕНИЕ...";
                 if (IsConnected) return "ЗАЩИЩЕНО";
                 return "ОТКЛЮЧЕНО";
@@ -202,15 +239,34 @@ namespace BunkerVPN.ViewModels
         {
             get
             {
-                if (IsConnecting) return "#FFB300";
+                if (IsDisconnecting) return "#64748B";
+                if (IsConnecting) return "#00E5FF";
                 if (IsConnected) return "#00E676";
                 return "#8E95A5";
             }
         }
 
-        public string ConnectionButtonText => IsConnected ? "ОТКЛЮЧИТЬ" : (IsConnecting ? "ОТМЕНА" : "ПОДКЛЮЧИТЬ");
+        public string ConnectionButtonText
+        {
+            get
+            {
+                if (IsDisconnecting) return "ОТКЛЮЧЕНИЕ...";
+                if (IsConnecting) return "ОТМЕНА";
+                if (IsConnected) return "ОТКЛЮЧИТЬ";
+                return "ПОДКЛЮЧИТЬ";
+            }
+        }
 
-        public string ConnectionButtonBackground => IsConnected ? "#FF5252" : "#FF6D00";
+        public string ConnectionButtonBackground
+        {
+            get
+            {
+                if (IsDisconnecting) return "#475569";
+                if (IsConnecting) return "#0284C7";
+                if (IsConnected) return "#E11D48";
+                return "#FF6D00";
+            }
+        }
 
         private string _durationText = "00:00:00";
         public string DurationText
@@ -277,11 +333,11 @@ namespace BunkerVPN.ViewModels
 
             _coreManager.CoreExited += () =>
             {
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                System.Windows.Application.Current.Dispatcher.Invoke(async () =>
                 {
-                    if (IsConnected)
+                    if (IsConnected && !IsDisconnecting)
                     {
-                        Disconnect();
+                        await DisconnectAsync();
                     }
                 });
             };
@@ -413,9 +469,11 @@ namespace BunkerVPN.ViewModels
 
         public async Task ToggleConnectionAsync()
         {
+            if (IsDisconnecting) return;
+
             if (IsConnected || IsConnecting)
             {
-                Disconnect();
+                await DisconnectAsync();
             }
             else
             {
@@ -427,13 +485,15 @@ namespace BunkerVPN.ViewModels
         {
             if (SelectedServer == null)
             {
-                Logs.Add("[-] No server selected to connect.");
+                Logs.Add("[-] Сервер для подключения не выбран.");
                 return;
             }
 
             IsConnecting = true;
             OnPropertyChanged(nameof(StatusText));
             OnPropertyChanged(nameof(StatusColor));
+            OnPropertyChanged(nameof(ConnectionButtonText));
+            OnPropertyChanged(nameof(ConnectionButtonBackground));
 
             var success = await _coreManager.StartAsync(SelectedServer, Settings);
 
@@ -443,8 +503,8 @@ namespace BunkerVPN.ViewModels
                 IsConnected = true;
                 _connectionStartTime = DateTime.Now;
                 _durationTimer.Start();
-                (System.Windows.Application.Current as App)?.UpdateTrayIcon(true, SelectedServer.Name);
-                (System.Windows.Application.Current as App)?.ShowNotification("Бункер Кота VPN", $"Успешно подключено к {SelectedServer.Name}");
+                (System.Windows.Application.Current as App)?.UpdateTrayIcon(true, SelectedServer.CleanName);
+                (System.Windows.Application.Current as App)?.ShowNotification("Бункер Кота VPN", $"Успешно подключено к {SelectedServer.CleanName}");
                 NotifyServiceStatusChanged();
                 _ = Task.Run(RunUrlTestAsync);
             }
@@ -457,20 +517,47 @@ namespace BunkerVPN.ViewModels
 
             OnPropertyChanged(nameof(StatusText));
             OnPropertyChanged(nameof(StatusColor));
+            OnPropertyChanged(nameof(ConnectionButtonText));
+            OnPropertyChanged(nameof(ConnectionButtonBackground));
+        }
+
+        public async Task DisconnectAsync()
+        {
+            if (IsDisconnecting) return;
+            IsDisconnecting = true;
+            IsConnecting = false;
+            OnPropertyChanged(nameof(StatusText));
+            OnPropertyChanged(nameof(StatusColor));
+            OnPropertyChanged(nameof(ConnectionButtonText));
+            OnPropertyChanged(nameof(ConnectionButtonBackground));
+
+            try
+            {
+                await _coreManager.StopAsync();
+            }
+            catch (Exception ex)
+            {
+                Logs.Add($"[-] Ошибка при отключении: {ex.Message}");
+            }
+            finally
+            {
+                _durationTimer.Stop();
+                IsConnected = false;
+                IsDisconnecting = false;
+                DurationText = "00:00:00";
+                UrlTestResult = "URL Тест";
+                (System.Windows.Application.Current as App)?.UpdateTrayIcon(false, "");
+                NotifyServiceStatusChanged();
+                OnPropertyChanged(nameof(StatusText));
+                OnPropertyChanged(nameof(StatusColor));
+                OnPropertyChanged(nameof(ConnectionButtonText));
+                OnPropertyChanged(nameof(ConnectionButtonBackground));
+            }
         }
 
         public void Disconnect()
         {
-            _coreManager.Stop();
-            _durationTimer.Stop();
-            IsConnected = false;
-            IsConnecting = false;
-            DurationText = "00:00:00";
-            UrlTestResult = "URL Тест";
-            (System.Windows.Application.Current as App)?.UpdateTrayIcon(false, "");
-            NotifyServiceStatusChanged();
-            OnPropertyChanged(nameof(StatusText));
-            OnPropertyChanged(nameof(StatusColor));
+            _ = Task.Run(async () => await DisconnectAsync());
         }
 
         public async Task RunUrlTestAsync()

@@ -17,6 +17,17 @@ namespace BunkerVPN.Models
 
         public string Id { get; set; } = Guid.NewGuid().ToString("N");
         public string Name { get; set; } = "Bunker Server";
+
+        public string CleanName
+        {
+            get
+            {
+                var clean = Name ?? "";
+                clean = Regex.Replace(clean, @"\|\s*\d+\s*ms.*$", "", RegexOptions.IgnoreCase).Trim();
+                clean = Regex.Replace(clean, @"\|\s*(VLESS|VMess|Trojan|Shadowsocks|Hysteria2?|WARP|WireGuard)\s*$", "", RegexOptions.IgnoreCase).Trim();
+                return string.IsNullOrWhiteSpace(clean) ? Name : clean;
+            }
+        }
         public string Protocol { get; set; } = "VLESS";
         public string Server { get; set; } = "";
         public int Port { get; set; } = 443;

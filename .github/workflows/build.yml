@@ -90,7 +90,7 @@ jobs:
       - name: Create Portable ZIP
         shell: pwsh
         run: |
-          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.10-Portable.zip -CompressionLevel Optimal
+          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.11-Portable.zip -CompressionLevel Optimal
 
       - name: Compile Inno Setup Installer
         shell: pwsh
@@ -107,41 +107,50 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: BunkerVPN-Windows-v1.0.10
+          name: BunkerVPN-Windows-v1.0.11
           path: |
-            dist\BunkerVPN-Windows-v1.0.10-Setup.exe
-            dist\BunkerVPN-Windows-v1.0.10-Portable.zip
+            dist\BunkerVPN-Windows-v1.0.11-Setup.exe
+            dist\BunkerVPN-Windows-v1.0.11-Portable.zip
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         with:
-          tag_name: v1.0.10
-          name: BunkerVPN for Windows v1.0.10 🪟 Window Resize & Maximize Edition
+          tag_name: v1.0.11
+          name: BunkerVPN for Windows v1.0.11 ⚡ Ultra-Speed & Anti-Freeze Hotfix
           body: |
-            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.10)
+            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.11)
             
-            ⚡ Обновление по отзывам подписчиков: добавлена полноценная поддержка изменения размера окна, кнопка максимизации и двойной клик по шапке!
+            ⚡ Комплексный хотфикс стабильности, скорости и интерфейса по отзывам подписчиков!
 
             ---
 
-            ### 🚀 Что нового в v1.0.10:
-            * 🪟 **Изменение размера окна (Window Resize):**
-              - Добавлена кнопка «Развернуть / Восстановить» (`🗖` / `❐`) в заголовок окна.
-              - Поддержка разворачивания окна на весь экран по двойному клику на шапку.
-              - Свободное изменение размера окна за рамки и правый нижний угол (`CanResizeWithGrip`).
-            * 🛡️ **Все фиксы ядра sing-box 1.11+:**
-              - 100% стабильный мгновенный запуск без падений и зависимости от баз GeoIP.
-              - Игровой режим Game Booster & Discord Fix (Full-Cone NAT, MTU 1340).
+            ### 🚀 Что нового в v1.0.11:
+            * 🛡️ **Полное устранение зависаний при отключении (Anti-Freeze):**
+              - Процесс отключения переведён в полностью асинхронный фоновый поток (`Task.Run`). Интерфейс больше никогда не замирает и не блокируется.
+              - Кнопка отключения мгновенно переходит в статус `ОТКЛЮЧЕНИЕ...` с блокировкой повторных кликов.
+              - Безопасная очистка системных прокси WinINet без зависания UI-потока.
+            * ⚡ **Ультра-скорость и моментальная отправка сообщений (Zero-Lag):**
+              - Фиксированный безопасный MTU `1360` (полная защита от дропа пакетов и задержек в Telegram/Discord).
+              - Переход на `stack: "mixed"` (высокоскоростной gVisor для TCP + нативный стек для UDP).
+              - Отключён `strict_route`, вызывавший конфликты шлюзов и задержки.
+              - Раздельный DNS: защищённый DoH `https://76.76.2.11/p0` через прокси-туннель для зарубежных сервисов (защита от DNS-отравления провайдеров).
+            * 🔄 **Фикс встроенного обновления:**
+              - Таймаут загрузки инсталлера в `UpdateService` увеличен до 10 минут (устранена ошибка `HttpClient.Timeout`).
+            * 🎨 **Редизайн и улучшение отображения:**
+              - Устранена дубликация пинга в названии серверов (`CleanName`).
+              - Новая плавная кнопка «ПОДКЛЮЧИТЬ / ОТКЛЮЧИТЬ» с закруглением 14px и неоновым свечением.
+              - Включено аппаратное сглаживание шрифтов (`ClearType` / `Display`).
+              - Полноценный ресайз окна мышкой и кнопка максимизации `🗖`.
 
             ---
 
             ### 📦 Скачать:
-            * 📥 **Установщик (Installer):** [BunkerVPN-Windows-v1.0.10-Setup.exe](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.10/BunkerVPN-Windows-v1.0.10-Setup.exe)
-            * 🧰 **Портативная версия (Portable ZIP):** [BunkerVPN-Windows-v1.0.10-Portable.zip](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.10/BunkerVPN-Windows-v1.0.10-Portable.zip)
+            * 📥 **Установщик (Installer):** [BunkerVPN-Windows-v1.0.11-Setup.exe](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.11/BunkerVPN-Windows-v1.0.11-Setup.exe)
+            * 🧰 **Портативная версия (Portable ZIP):** [BunkerVPN-Windows-v1.0.11-Portable.zip](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.11/BunkerVPN-Windows-v1.0.11-Portable.zip)
           files: |
-            dist/BunkerVPN-Windows-v1.0.10-Setup.exe
-            dist/BunkerVPN-Windows-v1.0.10-Portable.zip
+            dist/BunkerVPN-Windows-v1.0.11-Setup.exe
+            dist/BunkerVPN-Windows-v1.0.11-Portable.zip
             dist/bunkervpn_smoke_test.png
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
