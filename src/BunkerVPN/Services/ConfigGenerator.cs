@@ -85,12 +85,31 @@ namespace BunkerVPN.Services
             {
                 routeRules.Add(new Dictionary<string, object>
                 {
-                    ["geosite"] = new[] { "category-ru", "yandex", "vk", "mailru", "sberbank", "tinkoff", "gosuslugi" },
-                    ["outbound"] = "direct"
-                });
-                routeRules.Add(new Dictionary<string, object>
-                {
-                    ["geoip"] = new[] { "ru" },
+                    ["domain_suffix"] = new[]
+                    {
+                        ".ru",
+                        ".su",
+                        ".xn--p1ai",
+                        "yandex.ru",
+                        "yandex.net",
+                        "ya.ru",
+                        "vk.com",
+                        "vk.me",
+                        "mail.ru",
+                        "sberbank.ru",
+                        "sber.ru",
+                        "tinkoff.ru",
+                        "tbank.ru",
+                        "gosuslugi.ru",
+                        "mos.ru",
+                        "kinopoisk.ru",
+                        "ozon.ru",
+                        "wildberries.ru",
+                        "avito.ru",
+                        "rutube.ru",
+                        "dzen.ru",
+                        "2gis.ru"
+                    },
                     ["outbound"] = "direct"
                 });
             }
@@ -114,6 +133,9 @@ namespace BunkerVPN.Services
                         "riotgames.com",
                         "leagueoflegends.com",
                         "pvp.net",
+                        "ubisoft.com",
+                        "ubi.com",
+                        "wargaming.net",
                         "lesta.ru",
                         "tanki.su",
                         "korabli.su",
@@ -122,19 +144,8 @@ namespace BunkerVPN.Services
                     ["outbound"] = "direct"
                 });
 
-                routeRules.Add(new Dictionary<string, object>
-                {
-                    ["geosite"] = new[] { "steam", "epicgames", "ea", "ubisoft", "blizzard", "riot", "wargaming" },
-                    ["outbound"] = "direct"
-                });
-
                 // 2. Proxy routes for blocked voice, game auth, and game servers
                 // Discord Voice & RTC (UDP high ports + domains)
-                routeRules.Add(new Dictionary<string, object>
-                {
-                    ["geosite"] = new[] { "discord" },
-                    ["outbound"] = "proxy"
-                });
                 routeRules.Add(new Dictionary<string, object>
                 {
                     ["network"] = "udp",
@@ -142,12 +153,7 @@ namespace BunkerVPN.Services
                     ["outbound"] = "proxy"
                 });
 
-                // Supercell (Brawl Stars, Clash of Clans), Roblox, Steam Community
-                routeRules.Add(new Dictionary<string, object>
-                {
-                    ["geosite"] = new[] { "supercell", "brawlstars", "clashofclans", "roblox" },
-                    ["outbound"] = "proxy"
-                });
+                // Supercell (Brawl Stars, Clash of Clans), Roblox, Discord, Steam Community
                 routeRules.Add(new Dictionary<string, object>
                 {
                     ["domain_suffix"] = new[]

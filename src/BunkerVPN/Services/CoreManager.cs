@@ -55,8 +55,12 @@ namespace BunkerVPN.Services
             };
             psi.EnvironmentVariables["ENABLE_DEPRECATED_TUN_ADDRESS_FIELDS"] = "true";
             psi.EnvironmentVariables["ENABLE_DEPRECATED_SPECIAL_OUTBOUNDS"] = "true";
+            psi.EnvironmentVariables["ENABLE_DEPRECATED_GEOIP"] = "true";
+            psi.EnvironmentVariables["ENABLE_DEPRECATED_GEOSITE"] = "true";
             psi.EnvironmentVariables["ENABLE_LEGACY_TUN_ADDRESS_FIELDS"] = "1";
             psi.EnvironmentVariables["ENABLE_LEGACY_SPECIAL_OUTBOUNDS"] = "1";
+            psi.EnvironmentVariables["ENABLE_LEGACY_GEOIP"] = "1";
+            psi.EnvironmentVariables["ENABLE_LEGACY_GEOSITE"] = "1";
 
             try
             {

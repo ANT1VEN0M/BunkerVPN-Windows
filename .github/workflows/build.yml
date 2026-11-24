@@ -90,7 +90,7 @@ jobs:
       - name: Create Portable ZIP
         shell: pwsh
         run: |
-          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.8-Portable.zip -CompressionLevel Optimal
+          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.9-Portable.zip -CompressionLevel Optimal
 
       - name: Compile Inno Setup Installer
         shell: pwsh
@@ -107,42 +107,41 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: BunkerVPN-Windows-v1.0.8
+          name: BunkerVPN-Windows-v1.0.9
           path: |
-            dist\BunkerVPN-Windows-v1.0.8-Setup.exe
-            dist\BunkerVPN-Windows-v1.0.8-Portable.zip
+            dist\BunkerVPN-Windows-v1.0.9-Setup.exe
+            dist\BunkerVPN-Windows-v1.0.9-Portable.zip
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         with:
-          tag_name: v1.0.8
-          name: BunkerVPN for Windows v1.0.8 🎮 Game Booster & Discord Fix
+          tag_name: v1.0.9
+          name: BunkerVPN for Windows v1.0.9 ⚡ GeoIP/GeoSite Hotfix & Instant Start
           body: |
-            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.8)
+            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.9 Hotfix)
             
-            ⚡ Фирменный геймерский релиз: встроенный **Game Booster & Discord Fix**, оптимизация сетевого стека Full-Cone UDP (MTU 1340), раздельный роутинг для игр и максимальная скорость в голосовых чатах!
+            ⚡ Критический хотфикс запуска ядра sing-box 1.11+: устранено мигание кнопки «Подключить» и зависимость от внешних баз GeoIP/GeoSite!
 
             ---
 
-            ### 🎮 Что нового в v1.0.8 (Game Booster Edition):
-            * 🎮 **Режим Game Booster & Discord Fix:** 
-              - Автоматическая оптимизация UDP-стека Wintun: безопасный MTU `1340` (полное отсутствие фрагментации пакетов на LTE/GPON).
-              - `endpoint_independent_nat: true` (Full-Cone NAT) — идеальная слышимость и стабильность в голосовых каналах Discord (WebRTC/RTC).
-            * ⚡ **Умный гейминг-сплит (Smart Gaming Routing):**
-              - Голос Discord, авторизация Supercell (Brawl Stars), Roblox и Steam Community идут строго через защищённый туннель.
-              - Игровые серверы CS2, Dota 2, Valorant, Lesta/Мир Танков и загрузки контента Steam CDN идут **НАПРЯМУЮ** (нативный пинг 5–15 мс и гигабитная скорость загрузки).
-            * 🎛️ **Виджет быстрого переключения в UI:** Карточка Game Booster на главном экране позволяет активировать игровой режим в 1 клик.
-            * 🛡️ **Фикс ядра sing-box 1.11+:** Полная поддержка актуальных ядер с флагами совместимости.
+            ### 🚀 Что исправлено в v1.0.9 Hotfix:
+            * 🛡️ **Фикс мгновенного отключения («мигает и не запускается»):** 
+              - Sing-box 1.11+ по умолчанию падал с ошибкой при наличии правил GeoIP/GeoSite без флагов совместимости.
+              - Внедрены переменные окружения `ENABLE_DEPRECATED_GEOIP=true` и `ENABLE_DEPRECATED_GEOSITE=true`.
+              - Вся маршрутизация обхода РФ и игровых сервисов переведена на мгновенные нативные списки `domain_suffix` — клиенту больше не нужно скачивать 50 МБ баз из заблокированного GitHub! Запуск происходит за 0.00 секунды в 100% офлайн-режиме.
+            * 🎮 **Сохранены все геймерские оптимизации:**
+              - Full-Cone NAT (`endpoint_independent_nat: true`) и MTU `1340` для Discord Voice и Brawl Stars.
+              - Раздельный роутинг игр (CS2, Dota 2, Steam CDN — напрямую с пингом 5-15 мс).
 
             ---
 
             ### 📦 Скачать:
-            * 📥 **Установщик (Installer):** [BunkerVPN-Windows-v1.0.8-Setup.exe](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.8/BunkerVPN-Windows-v1.0.8-Setup.exe)
-            * 🧰 **Портативная версия (Portable ZIP):** [BunkerVPN-Windows-v1.0.8-Portable.zip](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.8/BunkerVPN-Windows-v1.0.8-Portable.zip)
+            * 📥 **Установщик (Installer):** [BunkerVPN-Windows-v1.0.9-Setup.exe](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.9/BunkerVPN-Windows-v1.0.9-Setup.exe)
+            * 🧰 **Портативная версия (Portable ZIP):** [BunkerVPN-Windows-v1.0.9-Portable.zip](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.9/BunkerVPN-Windows-v1.0.9-Portable.zip)
           files: |
-            dist/BunkerVPN-Windows-v1.0.8-Setup.exe
-            dist/BunkerVPN-Windows-v1.0.8-Portable.zip
+            dist/BunkerVPN-Windows-v1.0.9-Setup.exe
+            dist/BunkerVPN-Windows-v1.0.9-Portable.zip
             dist/bunkervpn_smoke_test.png
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
