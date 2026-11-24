@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/latest"><img src="https://img.shields.io/github/v/release/ANT1VEN0M/BunkerVPN-Windows?color=00E676&label=%D0%A0%D0%B5%D0%BB%D0%B8%D0%B7_v1.0.11" alt="Release" /></a>
+  <a href="https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/latest"><img src="https://img.shields.io/github/v/release/ANT1VEN0M/BunkerVPN-Windows?color=00E676&label=%D0%A0%D0%B5%D0%BB%D0%B8%D0%B7_v1.0.12" alt="Release" /></a>
   <img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-00E5FF" alt="Windows" />
   <img src="https://img.shields.io/badge/.NET-8.0%20WPF-7C4DFF" alt=".NET 8" />
   <img src="https://img.shields.io/badge/Core-sing--box%201.11.4-00E676" alt="Sing-box" />
@@ -76,7 +76,7 @@
 - 📢 **Telegram-канал:** [@BUNKER_KOTA](https://t.me/BUNKER_KOTA) *(1400+ подписчиков)*
 - 💬 **Чат сообщества:** [@BUNKER_K0TA](https://t.me/BUNKER_K0TA)
 - 👑 **Создатель:** [@k0tlux](https://t.me/k0tlux)
-- 🤖 **Android-клиент (v1.4.2 Hotfix):** [BunkerVPN для Android](https://github.com/ANT1VEN0M/BunkerVPN)
+- 🤖 **Android-клиент (v1.4.4 WireGuard Import Fix):** [BunkerVPN для Android](https://github.com/ANT1VEN0M/BunkerVPN)
 - 📡 **Сетевой монитор:** [Bunker URL Test v1.1.2 Universal](https://github.com/ANT1VEN0M/Bunker-Url-Test)
 - 🌐 **Официальный веб-портал:** [Bunker Auto-Engine](https://ant1ven0m.github.io/Bunker-Auto-Engine/)
 - 🔌 **Telegram-плагины:** [Bunker Neon Loader & Chat Translator](https://github.com/ANT1VEN0M/Bunker-Auto-Engine/tree/main/plugins)
