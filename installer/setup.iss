@@ -1,5 +1,5 @@
 #define MyAppName "BunkerVPN"
-#define MyAppVersion "1.0.12"
+#define MyAppVersion "1.0.13"
 #define MyAppPublisher "Bunker Kota"
 #define MyAppURL "https://t.me/BUNKER_KOTA"
 #define MyAppExeName "BunkerVPN.exe"

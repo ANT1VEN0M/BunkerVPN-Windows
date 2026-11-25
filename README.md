@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/latest"><img src="https://img.shields.io/github/v/release/ANT1VEN0M/BunkerVPN-Windows?color=00E676&label=%D0%A0%D0%B5%D0%BB%D0%B8%D0%B7_v1.0.12" alt="Release" /></a>
+  <a href="https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/latest"><img src="https://img.shields.io/github/v/release/ANT1VEN0M/BunkerVPN-Windows?color=00E676&label=%D0%A0%D0%B5%D0%BB%D0%B8%D0%B7_v1.0.13" alt="Release" /></a>
   <img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-00E5FF" alt="Windows" />
   <img src="https://img.shields.io/badge/.NET-8.0%20WPF-7C4DFF" alt=".NET 8" />
   <img src="https://img.shields.io/badge/Core-sing--box%201.11.4-00E676" alt="Sing-box" />
@@ -21,43 +21,43 @@
 
 ---
 
-## ⚡ Главные возможности (Версия v1.0.12)
+## ⚡ Главные возможности (Версия v1.0.13)
 
+* 🚀 **Монитор скорости в реальном времени (Speedometer):**
+  * В круг подключения встроен аккуратный динамический счётчик скорости (`↓ Скачивание` / `↑ Отдача` в КБ/с и МБ/с).
+  * Прямой замер пропускной способности адаптера `bunker-tun` каждую секунду без нагрузки на систему.
+* 🩺 **Кнопка самодиагностики «🩺 Тест сети»:**
+  * Экспресс-проверка реального сквозного прохождения трафика через туннель по запросу `HTTP 204 No Content` к внешним шлюзам с замером времени ответа в миллисекундах.
+* 🔪 **Встроенный оптимизатор Windows (Copilot & AI Bloat Killer):**
+  * Переключатель в настройках для блокировки скрытого автозапуска Microsoft Copilot (`DisabledByPolicy` State = 3) и фоновой телеметрии AI, освобождающий 200–500 МБ ОЗУ для игр.
 * 🩺 **Сохранение и экспорт логов для диагностики:**
   * Кнопка «💾 В файл» в разделе «Консоль / Логи» — сохранение полного диагностического отчёта в `.txt`.
   * Кнопка «📋 Копировать» — моментальное копирование всех логов в буфер обмена для отправки в Telegram (Ctrl+V).
-  * Кнопка «📂 Папка» — быстрый переход к папке логов `%APPDATA%\BunkerVPN\logs`.
   * Фоновое непрерывное автосохранение всех системных сообщений и логов sing-box в `bunker_vpn.log` с авторотацией.
 * 🛡️ **Устранение ложного TCP-пинга (Real TLS Handshake Ping):**
   * Заменён слепой TCP-коннект на реальный TLS Handshake с проверкой SNI. Неработающие серверы гарантированно получают статус `Недоступен` (`—`) и не поднимаются наверх.
-  * Автовыбор сервера подключает только 100% живые узлы с реальным положительным пингом.
-* 👑 **Новый VIP-фид в подписках:**
-  * Добавлен выделенный фид «👑 Золотая Выборка VIP» (VLESS Reality & Hysteria 2).
 * 🛡️ **Полное устранение зависаний при отключении (Anti-Freeze):**
   * Процесс отключения переведён в полностью асинхронный фоновый поток (`Task.Run`). Интерфейс никогда не замирает.
-  * Кнопка отключения мгновенно переходит в статус `ОТКЛЮЧЕНИЕ...` с блокировкой повторных кликов.
 * ⚡ **Ультра-скорость и моментальная отправка сообщений (Zero-Lag):**
   * Фиксированный безопасный MTU `1360` (полная защита от дропа пакетов в Telegram/Discord).
   * Переход на `stack: "mixed"` (высокоскоростной gVisor для TCP + нативный стек для UDP).
   * Отключён `strict_route`, настроен двойной DoH DNS через туннель.
-* 🚀 **Встроенный оптимизатор Windows (Copilot & AI Bloat Killer):**
-  * Интегрирован сервис `CopilotOptimizer` для отключения навязчивого автозапуска Microsoft Copilot (`DisabledByPolicy` State = 3) и фоновой телеметрии AI без удаления приложения, освобождающий 200–500 МБ ОЗУ и снижающий фоновую нагрузку.
 * 🪟 **Свободный ресайз окна:** изменение размера за любые рамки, кнопка максимизации `🗖` и двойной клик по шапке.
 
 ---
 
-## 📦 Скачать BunkerVPN v1.0.12
+## 📦 Скачать BunkerVPN v1.0.13
 
 | Тип загрузки | Прямая ссылка (GitHub) | Зеркало для РФ (без VPN) | Описание |
 | :--- | :---: | :---: | :--- |
-| 📥 **Установщик (Setup.exe)** | [**Скачать Setup v1.0.12**](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.12/BunkerVPN-Windows-v1.0.12-Setup.exe) | [**Зеркало РФ (Setup)**](https://ghfast.top/https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.12/BunkerVPN-Windows-v1.0.12-Setup.exe) | Рекомендуется. Устанавливает программу, создаёт ярлыки на рабочем столе и автозапуск. |
-| 🧰 **Портативная версия (ZIP)** | [**Скачать Portable v1.0.12**](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.12/BunkerVPN-Windows-v1.0.12-Portable.zip) | [**Зеркало РФ (Portable)**](https://ghfast.top/https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.12/BunkerVPN-Windows-v1.0.12-Portable.zip) | Не требует установки. Распакуйте архив в любую папку и запустите `BunkerVPN.exe`. |
+| 📥 **Установщик (Setup.exe)** | [**Скачать Setup v1.0.13**](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.13/BunkerVPN-Windows-v1.0.13-Setup.exe) | [**Зеркало РФ (Setup)**](https://ghfast.top/https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.13/BunkerVPN-Windows-v1.0.13-Setup.exe) | Рекомендуется. Устанавливает программу, создаёт ярлыки на рабочем столе и автозапуск. |
+| 🧰 **Портативная версия (ZIP)** | [**Скачать Portable v1.0.13**](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.13/BunkerVPN-Windows-v1.0.13-Portable.zip) | [**Зеркало РФ (Portable)**](https://ghfast.top/https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.13/BunkerVPN-Windows-v1.0.13-Portable.zip) | Не требует установки. Распакуйте архив в любую папку и запустите `BunkerVPN.exe`. |
 
 ---
 
 ## 🚀 Быстрый старт
 
-1. Скачайте установщик `BunkerVPN-Windows-v1.0.12-Setup.exe` (или распакуйте Portable ZIP).
+1. Скачайте установщик `BunkerVPN-Windows-v1.0.13-Setup.exe` (или распакуйте Portable ZIP).
 2. Запустите приложение (при запросе UAC разрешите запуск от имени администратора для работы драйвера WinTUN).
 3. Нажмите большую оранжевую кнопку **«ПОДКЛЮЧИТЬ»**.
 4. Проверьте задержку серверов на вкладке **«Серверы»** или нажмите **«📶 По пингу»** для автосортировки лучших узлов.

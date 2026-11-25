@@ -16,8 +16,11 @@ namespace BunkerVPN.ViewModels
         private readonly CoreManager _coreManager = new();
         private readonly SubscriptionService _subService = new();
         private readonly UpdateService _updateService = new();
+        private readonly SpeedMonitorService _speedMonitor = new();
         private readonly DispatcherTimer _durationTimer = new();
         private DateTime _connectionStartTime;
+        private string? _customTunnelHealthStatus;
+        private bool _isTestingInternet;
 
         public AppSettings Settings { get; set; } = AppSettings.Load();
 
@@ -129,8 +132,34 @@ namespace BunkerVPN.ViewModels
             set { _isPinging = value; OnPropertyChanged(); OnPropertyChanged(nameof(PingButtonText)); }
         }
 
+        // Real-time Speed Monitoring
+        public string DownloadSpeedText => _speedMonitor.DownloadSpeedText;
+        public string UploadSpeedText => _speedMonitor.UploadSpeedText;
+        public Visibility SpeedVisibility => IsConnected ? Visibility.Visible : Visibility.Collapsed;
+
+        // Internet Access Diagnostics
+        public bool IsTestingInternet
+        {
+            get => _isTestingInternet;
+            set
+            {
+                _isTestingInternet = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(InternetTestButtonText));
+            }
+        }
+        public string InternetTestButtonText => IsTestingInternet ? "⏳ Тест..." : "🩺 Тест сети";
+
         // Services Unblock Status (Android-style)
-        public string TunnelHealthStatus => IsConnected ? "🟢 Защита активна • Smart Bypass" : "⚪ Ожидание подключения";
+        public string TunnelHealthStatus
+        {
+            get => _customTunnelHealthStatus ?? (IsConnected ? "🟢 Защита активна • Smart Bypass" : "⚪ Ожидание подключения");
+            set
+            {
+                _customTunnelHealthStatus = value;
+                OnPropertyChanged();
+            }
+        }
 
         public string YtStatusText => IsConnected ? "⚡ 4K 60fps • Разблокирован" : "Заблокирован ТСПУ";
         public string YtStatusColor => IsConnected ? "#00E676" : "#FF5252";
@@ -181,6 +210,52 @@ namespace BunkerVPN.ViewModels
             GameBoosterMode = !GameBoosterMode;
         }
 
+        public bool DisableCopilotAutostart
+        {
+            get => Settings.DisableCopilotAutostart;
+            set
+            {
+                if (Settings.DisableCopilotAutostart != value)
+                {
+                    Settings.DisableCopilotAutostart = value;
+                    Settings.Save();
+                    OnPropertyChanged();
+                    ApplyCopilotOptimization(value);
+                }
+            }
+        }
+
+        public void ApplyCopilotOptimization(bool disable)
+        {
+            try
+            {
+                if (disable)
+                {
+                    bool ok = CopilotOptimizer.DisableCopilotAutostart();
+                    if (ok)
+                    {
+                        AddLog("[+] [Оптимизация] Автозапуск Microsoft Copilot и AI заблокирован (DisabledByPolicy)");
+                    }
+                    else
+                    {
+                        AddLog("[!] [Оптимизация] Не удалось изменить автозапуск Copilot (проверьте права администратора)");
+                    }
+                }
+                else
+                {
+                    bool ok = CopilotOptimizer.RestoreCopilotAutostart();
+                    if (ok)
+                    {
+                        AddLog("[-] [Оптимизация] Настройки автозапуска Copilot возвращены по умолчанию");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddLog($"[!] [Оптимизация] Ошибка: {ex.Message}");
+            }
+        }
+
         private string _urlTestResult = "URL Тест";
         public string UrlTestResult
         {
@@ -208,6 +283,7 @@ namespace BunkerVPN.ViewModels
             OnPropertyChanged(nameof(AiStatusColor));
             OnPropertyChanged(nameof(WebStatusText));
             OnPropertyChanged(nameof(WebStatusColor));
+            OnPropertyChanged(nameof(SpeedVisibility));
         }
 
         public string PingButtonText => IsPinging ? "Замер..." : "Пинг";
@@ -330,6 +406,19 @@ namespace BunkerVPN.ViewModels
             {
                 var elapsed = DateTime.Now - _connectionStartTime;
                 DurationText = elapsed.ToString(@"hh\:mm\:ss");
+                if (IsConnected)
+                {
+                    _speedMonitor.UpdateSample();
+                }
+            };
+
+            _speedMonitor.SpeedUpdated += (down, up) =>
+            {
+                System.Windows.Application.Current?.Dispatcher.Invoke(() =>
+                {
+                    OnPropertyChanged(nameof(DownloadSpeedText));
+                    OnPropertyChanged(nameof(UploadSpeedText));
+                });
             };
 
             _coreManager.LogReceived += log =>
@@ -378,6 +467,18 @@ namespace BunkerVPN.ViewModels
             {
                 _ = Task.Run(() => CheckForUpdatesAsync(silent: true));
             }
+
+            // 6. Sync Copilot optimization status with system
+            try
+            {
+                bool isCopilotBlocked = CopilotOptimizer.IsCopilotAutostartDisabled();
+                if (Settings.DisableCopilotAutostart != isCopilotBlocked)
+                {
+                    Settings.DisableCopilotAutostart = isCopilotBlocked;
+                    OnPropertyChanged(nameof(DisableCopilotAutostart));
+                }
+            }
+            catch { }
         }
 
         public async Task RefreshServersAsync()
@@ -508,10 +609,12 @@ namespace BunkerVPN.ViewModels
             {
                 IsConnected = true;
                 _connectionStartTime = DateTime.Now;
+                _speedMonitor.Reset();
                 _durationTimer.Start();
                 (System.Windows.Application.Current as App)?.UpdateTrayIcon(true, SelectedServer.CleanName);
                 (System.Windows.Application.Current as App)?.ShowNotification("Бункер Кота VPN", $"Успешно подключено к {SelectedServer.CleanName}");
                 NotifyServiceStatusChanged();
+                OnPropertyChanged(nameof(SpeedVisibility));
                 _ = Task.Run(RunUrlTestAsync);
             }
             else
@@ -548,6 +651,8 @@ namespace BunkerVPN.ViewModels
             finally
             {
                 _durationTimer.Stop();
+                _speedMonitor.Reset();
+                _customTunnelHealthStatus = null;
                 IsConnected = false;
                 IsDisconnecting = false;
                 DurationText = "00:00:00";
@@ -558,12 +663,53 @@ namespace BunkerVPN.ViewModels
                 OnPropertyChanged(nameof(StatusColor));
                 OnPropertyChanged(nameof(ConnectionButtonText));
                 OnPropertyChanged(nameof(ConnectionButtonBackground));
+                OnPropertyChanged(nameof(SpeedVisibility));
+                OnPropertyChanged(nameof(DownloadSpeedText));
+                OnPropertyChanged(nameof(UploadSpeedText));
+                OnPropertyChanged(nameof(TunnelHealthStatus));
             }
         }
 
         public void Disconnect()
         {
             _ = Task.Run(async () => await DisconnectAsync());
+        }
+
+        public async Task CheckInternetAccessAsync()
+        {
+            if (IsTestingInternet) return;
+            IsTestingInternet = true;
+            TunnelHealthStatus = "🟡 Замер доступа в сеть...";
+            AddLog("[*] [Диагностика] Проверка реального доступа в сеть через туннель...");
+
+            try
+            {
+                var latency = await PingService.TestUrlLatencyAsync("https://cp.cloudflare.com/generate_204", 3000);
+                if (latency <= 0)
+                {
+                    latency = await PingService.TestUrlLatencyAsync("https://www.google.com/generate_204", 3000);
+                }
+
+                if (latency > 0)
+                {
+                    TunnelHealthStatus = $"🟢 Доступ в сеть: Есть ({latency} мс)";
+                    AddLog($"[+] [Диагностика] Интернет доступен! Шлюз ответил за {latency} мс");
+                }
+                else
+                {
+                    TunnelHealthStatus = "🔴 Нет ответа (проверьте узел)";
+                    AddLog("[-] [Диагностика] Ошибка: внешний шлюз не ответил. Проверьте сервер или смените узел.");
+                }
+            }
+            catch (Exception ex)
+            {
+                TunnelHealthStatus = "🔴 Ошибка проверки";
+                AddLog($"[-] [Диагностика] Ошибка: {ex.Message}");
+            }
+            finally
+            {
+                IsTestingInternet = false;
+            }
         }
 
         public async Task RunUrlTestAsync()

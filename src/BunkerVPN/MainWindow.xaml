@@ -222,7 +222,15 @@
                                     <TextBlock Text="{Binding StatusText}" Foreground="{Binding StatusColor}"
                                                FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" />
                                     <TextBlock Text="{Binding DurationText}" Foreground="{StaticResource TextSecondaryBrush}"
-                                               FontSize="13" Margin="0,6,0,0" HorizontalAlignment="Center" />
+                                               FontSize="13" Margin="0,4,0,0" HorizontalAlignment="Center" />
+                                    <!-- Real-time Speed Monitoring -->
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0"
+                                                Visibility="{Binding SpeedVisibility}">
+                                        <TextBlock Text="↓ " Foreground="#00E5FF" FontSize="11" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding DownloadSpeedText}" Foreground="#FFFFFF" FontSize="11" FontWeight="SemiBold" Margin="0,0,8,0"/>
+                                        <TextBlock Text="↑ " Foreground="#00E676" FontSize="11" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding UploadSpeedText}" Foreground="#FFFFFF" FontSize="11" FontWeight="SemiBold"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </Grid>
 
@@ -274,9 +282,15 @@
                             <StackPanel>
                                 <Grid Margin="0,0,0,10">
                                     <TextBlock Text="🛡️ СТАТУС РАЗБЛОКИРОВКИ СЕРВИСОВ (ТСПУ BYPASS)"
-                                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" FontWeight="Bold" />
-                                    <TextBlock HorizontalAlignment="Right" Text="{Binding TunnelHealthStatus}"
-                                               Foreground="{StaticResource AccentCyanBrush}" FontSize="11" FontWeight="SemiBold" />
+                                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" FontWeight="Bold" VerticalAlignment="Center" />
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding TunnelHealthStatus}"
+                                                   Foreground="{StaticResource AccentCyanBrush}" FontSize="11" FontWeight="SemiBold" Margin="0,0,10,0" VerticalAlignment="Center" />
+                                        <Button Click="CheckInternet_Click" Style="{StaticResource BunkerButtonStyle}"
+                                                Height="22" Padding="8,0" Cursor="Hand" ToolTip="Проверить реальный доступ в интернет через туннель (HTTP 204)">
+                                            <TextBlock Text="{Binding InternetTestButtonText}" FontSize="10" FontWeight="Bold" Foreground="#00E5FF"/>
+                                        </Button>
+                                    </StackPanel>
                                 </Grid>
                                 <UniformGrid Columns="3" Rows="2">
                                     <!-- 1. YouTube 4K -->
@@ -690,6 +704,14 @@
                                         <CheckBox IsChecked="{Binding Settings.StartWithWindows}"
                                                   Click="AutoStart_Changed" Margin="0,0,0,14">
                                             <TextBlock Text="Запускать BunkerVPN при старте Windows" Foreground="{StaticResource TextPrimaryBrush}" FontWeight="SemiBold" />
+                                        </CheckBox>
+
+                                        <CheckBox IsChecked="{Binding DisableCopilotAutostart}"
+                                                  Margin="0,0,0,14">
+                                            <StackPanel>
+                                                <TextBlock Text="🔪 Оптимизация Windows: Отключить автозапуск Copilot &amp; AI" Foreground="{StaticResource TextPrimaryBrush}" FontWeight="SemiBold" />
+                                                <TextBlock Text="Переводит скрытую задачу Copilot в DisabledByPolicy. Экономит 200–500 МБ ОЗУ, убирает фоновую телеметрию и блокирует автовозврат." Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" />
+                                            </StackPanel>
                                         </CheckBox>
 
                                         <CheckBox IsChecked="{Binding Settings.AutoConnectOnStartup}"

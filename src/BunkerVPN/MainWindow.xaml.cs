@@ -109,6 +109,11 @@ namespace BunkerVPN
             await ViewModel.PingAllServersAsync();
         }
 
+        private async void CheckInternet_Click(object sender, RoutedEventArgs e)
+        {
+            await ViewModel.CheckInternetAccessAsync();
+        }
+
         private async void RefreshServers_Click(object sender, RoutedEventArgs e)
         {
             await ViewModel.RefreshServersAsync();
