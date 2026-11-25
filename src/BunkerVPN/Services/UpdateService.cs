@@ -39,7 +39,7 @@ namespace BunkerVPN.Services
             }
         }
 
-        public static string CurrentVersion => "1.0.14";
+        public static string CurrentVersion => "1.0.13";
 
         public async Task<UpdateInfo> CheckForUpdatesAsync()
         {

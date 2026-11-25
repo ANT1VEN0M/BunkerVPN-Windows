@@ -90,7 +90,7 @@ jobs:
       - name: Create Portable ZIP
         shell: pwsh
         run: |
-          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.14-Portable.zip -CompressionLevel Optimal
+          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.13-Portable.zip -CompressionLevel Optimal
 
       - name: Compile Inno Setup Installer
         shell: pwsh
@@ -107,49 +107,42 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: BunkerVPN-Windows-v1.0.14
+          name: BunkerVPN-Windows-v1.0.13
           path: |
-            dist\BunkerVPN-Windows-v1.0.14-Setup.exe
-            dist\BunkerVPN-Windows-v1.0.14-Portable.zip
+            dist\BunkerVPN-Windows-v1.0.13-Setup.exe
+            dist\BunkerVPN-Windows-v1.0.13-Portable.zip
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         with:
-          tag_name: v1.0.14
-          name: BunkerVPN for Windows v1.0.14 🛡️ TUN NCSI & High-Speed Routing Fix Edition
+          tag_name: v1.0.13
+          name: BunkerVPN for Windows v1.0.13 🚀 Speedometer & Copilot Bloat Killer Edition
           body: |
-            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.14)
+            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.13)
             
-            ⚡ Исправление сетевого статуса «Без доступа к Интернету», переход на сетевой стек gVisor и полная поддержка VLESS XUDP!
+            ⚡ Мониторинг скорости в реальном времени, встроенный убийца фонового автозапуска Copilot и самодиагностика сети!
 
             ---
 
-            ### 🚀 Что нового в v1.0.14:
-            * 🛡️ **Решение проблемы «Без доступа к Интернету» в трее Windows:**
-              - Добавлен прямой байпас и приоритетное разрешение системных проверок Windows NCSI (`msftconnecttest.com`, `msftncsi.com`).
-              - Теперь сетевой значок Windows мгновенно рапортует «Доступ к Интернету» и не блокирует системные службы Microsoft Store, OneDrive и Edge.
-            * 🧠 **Сетевой стек gVisor по умолчанию в TUN:**
-              - Переход с гибридного стека `mixed` на проверенный user-space стек `gvisor`.
-              - Исключает тихий сброс TCP-пакетов модулями WFP, брандмауэром Windows и сторонними антивирусами.
-            * ⚡ **Полноценная поддержка VLESS XUDP (`packet_encoding: xudp`):**
-              - Включено мультиплексирование UDP-трафика для VLESS Reality / TLS. Голосовые каналы Discord Voice, игровой UDP-трафик и DNS-запросы больше не зависают.
-            * 🎯 **Двойной перехват DNS (Port 53 + Protocol DNS):**
-              - Исключает пропуск DNS-запросов Windows до срабатывания сниффера пакетов.
-            * 🚀 **Поддержка xhttp / httpupgrade транспортов:**
-              - Корректная обработка современных типов прокси-серверов в подписках.
+            ### 🚀 Что нового в v1.0.13:
             * 🚀 **Монитор скорости в реальном времени (Live Speedometer):**
               - В центральный круг подключения встроен аккуратный цифровой спидометр (`↓ Скачивание` / `↑ Отдача` в KB/s и MB/s).
+              - Непрерывный поминутный и посекундный опрос байтов сетевого адаптера `bunker-tun` без нагрузки на процессор.
             * 🩺 **Кнопка экспресс-диагностики «🩺 Тест сети»:**
-              - Быстрая проверка шлюза `HTTP 204 No Content` через туннель с замером реального пинга в миллисекундах.
+              - В заголовок разблокировки сервисов добавлена кнопка быстрой проверки соединения `HTTP 204 No Content` через туннель с замером реального пинга в миллисекундах. Больше никаких сомнений «работает ли интернет прямо сейчас».
             * 🔪 **Встроенный оптимизатор Windows (Copilot & AI Bloat Killer):**
-              - Блокировка скрытого автозапуска Microsoft Copilot для разгрузки ОЗУ и процессора.
+              - Нативный тумблер в настройках, блокирующий скрытый автозапуск Microsoft Copilot через AppModel `DisabledByPolicy` (State = 3) и Group Policy.
+              - Экономит от 200 до 500 МБ оперативной памяти и разгружает процессор для максимального FPS в играх.
+            * 🩺 **Сохранение и экспорт логов:** сохранение отчёта в файл `.txt` и буфер обмена для быстрой техподдержки в Telegram.
+            * 🛡️ **Реальный TLS-пинг:** отсечение неживых серверов с автовыбором только проверенных узлов.
+            * 🎮 **Game Booster (MTU 1340 & Full-Cone UDP):** стабильный голосовой чат Discord без зависания RTC.
 
             ---
 
             ### 📦 Скачать:
-            * 📥 **Установщик (Installer):** [BunkerVPN-Windows-v1.0.14-Setup.exe](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.14/BunkerVPN-Windows-v1.0.14-Setup.exe)
-            * 🧰 **Портативная версия (Portable ZIP):** [BunkerVPN-Windows-v1.0.14-Portable.zip](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.14/BunkerVPN-Windows-v1.0.14-Portable.zip)
+            * 📥 **Установщик (Installer):** [BunkerVPN-Windows-v1.0.13-Setup.exe](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.13/BunkerVPN-Windows-v1.0.13-Setup.exe)
+            * 🧰 **Портативная версия (Portable ZIP):** [BunkerVPN-Windows-v1.0.13-Portable.zip](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.13/BunkerVPN-Windows-v1.0.13-Portable.zip)
           files: |
             dist/*-Setup.exe
             dist/*-Portable.zip

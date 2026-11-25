@@ -28,7 +28,7 @@ namespace BunkerVPN.Services
             new() { Title = "Discord Voice & Gaming", Description = "Full-Cone UDP для мгновенного подключения голосовых каналов Discord", Url = "https://cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/sub/discord.txt", Icon = "🎮" },
             new() { Title = "Турбо-серверы (Минимальный пинг)", Description = "Быстрые сервера с минимальной задержкой для игр и стриминга", Url = "https://cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/sub/fast.txt", Icon = "⚡" },
             new() { Title = "Белый список (RU / BY)", Description = "Серверы в белых списках хостингов РФ для обхода глухих блокировок", Url = "https://cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/sub/bs.txt", Icon = "🤍" },
-            new() { Title = "Cloudflare WARP+ (Порт 880)", Description = "Cloudflare WireGuard (Внимание: ТСПУ РФ глушит чистый WG, для 100% стабильности выбирайте VIP Gold или Микс)", Url = "https://cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/sub/warp.txt", Icon = "🚀" },
+            new() { Title = "Cloudflare WARP+ (Порт 880)", Description = "Прямой WireGuard туннель Cloudflare с защитой от ТСПУ", Url = "https://cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/sub/warp.txt", Icon = "🚀" },
             new() { Title = "Завод / Проходная (443 & 53)", Description = "Для работы в строгих корпоративных сетях предприятий", Url = "https://cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/sub/factory.txt", Icon = "🏭" }
         };
 

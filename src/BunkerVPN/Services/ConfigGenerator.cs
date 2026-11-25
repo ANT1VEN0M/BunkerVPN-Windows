@@ -25,7 +25,7 @@ namespace BunkerVPN.Services
                     ["address"] = new[] { "172.19.0.1/30", "fdfe:dcba:9876::1/126" },
                     ["auto_route"] = true,
                     ["strict_route"] = false,
-                    ["stack"] = "gvisor", // gvisor gives 100% reliable userspace network stack on Windows without WFP drops
+                    ["stack"] = "mixed",
                     ["mtu"] = settings.GameBoosterMode ? 1340 : 1360,
                     ["sniff"] = true
                 };
@@ -64,31 +64,11 @@ namespace BunkerVPN.Services
 
             var routeRules = new List<object>
             {
-                // 1. Hijack DNS (both port 53 and protocol dns for instant interception)
-                new Dictionary<string, object>
-                {
-                    ["port"] = new[] { 53 },
-                    ["action"] = "hijack-dns"
-                },
                 new Dictionary<string, object>
                 {
                     ["protocol"] = "dns",
                     ["action"] = "hijack-dns"
                 },
-                // 2. Direct route for Windows NCSI connectivity checks (Fixes Windows "Без доступа к Интернету")
-                new Dictionary<string, object>
-                {
-                    ["domain"] = new[]
-                    {
-                        "msftconnecttest.com",
-                        "www.msftconnecttest.com",
-                        "msftncsi.com",
-                        "www.msftncsi.com",
-                        "ipv6.msftconnecttest.com"
-                    },
-                    ["outbound"] = "direct"
-                },
-                // 3. Private IP ranges direct
                 new Dictionary<string, object>
                 {
                     ["ip_is_private"] = true,
@@ -204,14 +184,14 @@ namespace BunkerVPN.Services
                         new Dictionary<string, object>
                         {
                             ["tag"] = "dns-remote",
-                            ["address"] = $"https://{settings.PrimaryDns}/dns-query",
+                            ["address"] = "https://76.76.2.11/p0",
                             ["address_resolver"] = "dns-direct",
                             ["detour"] = "proxy"
                         },
                         new Dictionary<string, object>
                         {
                             ["tag"] = "dns-remote-fallback",
-                            ["address"] = "https://8.8.8.8/dns-query",
+                            ["address"] = $"https://{settings.PrimaryDns}/dns-query",
                             ["address_resolver"] = "dns-direct",
                             ["detour"] = "proxy"
                         },
@@ -224,20 +204,6 @@ namespace BunkerVPN.Services
                     },
                     ["rules"] = new object[]
                     {
-                        // 1. Windows NCSI connectivity checks always resolve directly
-                        new Dictionary<string, object>
-                        {
-                            ["domain"] = new[]
-                            {
-                                "msftconnecttest.com",
-                                "www.msftconnecttest.com",
-                                "msftncsi.com",
-                                "www.msftncsi.com",
-                                "ipv6.msftconnecttest.com"
-                            },
-                            ["server"] = "dns-direct"
-                        },
-                        // 2. Russian sites direct resolution
                         new Dictionary<string, object>
                         {
                             ["domain_suffix"] = new[]
@@ -246,12 +212,10 @@ namespace BunkerVPN.Services
                                 "yandex.ru", "yandex.net", "ya.ru",
                                 "vk.com", "vk.me", "mail.ru",
                                 "sberbank.ru", "sber.ru", "tinkoff.ru", "tbank.ru",
-                                "gosuslugi.ru", "mos.ru", "kinopoisk.ru", "ozon.ru", "wildberries.ru",
-                                "avito.ru", "rutube.ru", "dzen.ru", "2gis.ru"
+                                "gosuslugi.ru", "mos.ru", "kinopoisk.ru", "ozon.ru", "wildberries.ru"
                             },
                             ["server"] = "dns-direct"
                         },
-                        // 3. Fallback: all foreign & proxy traffic to remote DoH
                         new Dictionary<string, object>
                         {
                             ["outbound"] = "any",
@@ -364,7 +328,6 @@ namespace BunkerVPN.Services
                 outbound["type"] = "vless";
                 outbound["server"] = node.Server;
                 outbound["server_port"] = node.Port;
-                outbound["packet_encoding"] = "xudp"; // CRITICAL: multiplexes UDP over TCP for DNS, Discord Voice & Gaming
 
                 var uri = new Uri(raw);
                 var query = HttpUtility.ParseQueryString(uri.Query);
@@ -395,22 +358,12 @@ namespace BunkerVPN.Services
                 }
                 else if (security.Equals("tls", StringComparison.OrdinalIgnoreCase))
                 {
-                    var tlsDict = new Dictionary<string, object>
+                    outbound["tls"] = new Dictionary<string, object>
                     {
                         ["enabled"] = true,
                         ["server_name"] = query["sni"] ?? "",
                         ["insecure"] = query["allowInsecure"] == "1"
                     };
-                    var fp = query["fp"] ?? "chrome";
-                    if (!string.IsNullOrEmpty(fp))
-                    {
-                        tlsDict["utls"] = new Dictionary<string, object>
-                        {
-                            ["enabled"] = true,
-                            ["fingerprint"] = fp
-                        };
-                    }
-                    outbound["tls"] = tlsDict;
                 }
 
                 var netType = query["type"] ?? "tcp";
@@ -428,15 +381,6 @@ namespace BunkerVPN.Services
                     {
                         ["type"] = "grpc",
                         ["service_name"] = query["serviceName"] ?? ""
-                    };
-                }
-                else if (netType.Equals("xhttp", StringComparison.OrdinalIgnoreCase) || netType.Equals("httpupgrade", StringComparison.OrdinalIgnoreCase))
-                {
-                    outbound["transport"] = new Dictionary<string, object>
-                    {
-                        ["type"] = "httpupgrade",
-                        ["host"] = query["host"] ?? query["sni"] ?? node.Server,
-                        ["path"] = query["path"] ?? "/"
                     };
                 }
 
