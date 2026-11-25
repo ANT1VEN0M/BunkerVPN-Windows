@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Threading;
 using BunkerVPN.Models;
 using BunkerVPN.Services;
