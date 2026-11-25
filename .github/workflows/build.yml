@@ -90,7 +90,7 @@ jobs:
       - name: Create Portable ZIP
         shell: pwsh
         run: |
-          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.12-Portable.zip -CompressionLevel Optimal
+          Compress-Archive -Path publish\* -DestinationPath dist\BunkerVPN-Windows-v1.0.13-Portable.zip -CompressionLevel Optimal
 
       - name: Compile Inno Setup Installer
         shell: pwsh
@@ -107,45 +107,42 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: BunkerVPN-Windows-v1.0.12
+          name: BunkerVPN-Windows-v1.0.13
           path: |
-            dist\BunkerVPN-Windows-v1.0.12-Setup.exe
-            dist\BunkerVPN-Windows-v1.0.12-Portable.zip
+            dist\BunkerVPN-Windows-v1.0.13-Setup.exe
+            dist\BunkerVPN-Windows-v1.0.13-Portable.zip
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         with:
-          tag_name: v1.0.12
-          name: BunkerVPN for Windows v1.0.12 🩺 Diagnostic Logs & Real TLS-Ping Edition
+          tag_name: v1.0.13
+          name: BunkerVPN for Windows v1.0.13 🚀 Speedometer & Copilot Bloat Killer Edition
           body: |
-            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.12)
+            # 🐈‍⬛ BunkerVPN for Windows PC (Release v1.0.13)
             
-            ⚡ Обновление стабильности, экспорта логов и устранения ложного TCP-пинга по отзывам подписчиков!
+            ⚡ Мониторинг скорости в реальном времени, встроенный убийца фонового автозапуска Copilot и самодиагностика сети!
 
             ---
 
-            ### 🚀 Что нового в v1.0.12:
-            * 🩺 **Сохранение и экспорт логов для диагностики:**
-              - Добавлена кнопка «💾 В файл» на вкладке «Консоль / Логи» — сохранение полного диагностического отчёта в `.txt`.
-              - Добавлена кнопка «📋 Копировать» — моментальное копирование всех логов в буфер обмена для быстрой отправки в Telegram (Ctrl+V).
-              - Добавлена кнопка «📂 Папка» — быстрый переход к системной папке логов в Проводнике Windows (`%APPDATA%\BunkerVPN\logs`).
-              - Фоновое автосохранение всех системных сообщений, событий туннеля и ядра sing-box в постоянный файл `bunker_vpn.log` с ротацией.
-            * 🛡️ **Устранён ложный TCP-пинг (Real TLS Handshake Ping):**
-              - Заменён «слепой» TCP-коннект (который показывал 15 мс на неработающих серверах с просто открытым 443 портом) на реальный TLS Handshake с проверкой SNI.
-              - Неработающие серверы теперь гарантированно получают статус `Недоступен` (`—`) и убираются в конец списка.
-              - Автовыбор сервера подключает только 100% живые узлы с реальным положительным пингом!
-            * 👑 **Новый VIP-фид в подписках:**
-              - В список подписок добавлен выделенный фид «👑 Золотая Выборка VIP» (VLESS Reality & Hysteria 2).
-            * ⚡ **Чистая конфигурация Sing-box 1.11+:**
-              - Маршрутизация DNS переведена на современный экшен `action: "hijack-dns"` без устаревших специальных аутбаундов.
-              - Двойной отказоустойчивый DoH резолвер (`76.76.2.11` + `1.1.1.1`) через прокси для защиты от цензуры и отравления DNS.
+            ### 🚀 Что нового в v1.0.13:
+            * 🚀 **Монитор скорости в реальном времени (Live Speedometer):**
+              - В центральный круг подключения встроен аккуратный цифровой спидометр (`↓ Скачивание` / `↑ Отдача` в KB/s и MB/s).
+              - Непрерывный поминутный и посекундный опрос байтов сетевого адаптера `bunker-tun` без нагрузки на процессор.
+            * 🩺 **Кнопка экспресс-диагностики «🩺 Тест сети»:**
+              - В заголовок разблокировки сервисов добавлена кнопка быстрой проверки соединения `HTTP 204 No Content` через туннель с замером реального пинга в миллисекундах. Больше никаких сомнений «работает ли интернет прямо сейчас».
+            * 🔪 **Встроенный оптимизатор Windows (Copilot & AI Bloat Killer):**
+              - Нативный тумблер в настройках, блокирующий скрытый автозапуск Microsoft Copilot через AppModel `DisabledByPolicy` (State = 3) и Group Policy.
+              - Экономит от 200 до 500 МБ оперативной памяти и разгружает процессор для максимального FPS в играх.
+            * 🩺 **Сохранение и экспорт логов:** сохранение отчёта в файл `.txt` и буфер обмена для быстрой техподдержки в Telegram.
+            * 🛡️ **Реальный TLS-пинг:** отсечение неживых серверов с автовыбором только проверенных узлов.
+            * 🎮 **Game Booster (MTU 1340 & Full-Cone UDP):** стабильный голосовой чат Discord без зависания RTC.
 
             ---
 
             ### 📦 Скачать:
-            * 📥 **Установщик (Installer):** [BunkerVPN-Windows-v1.0.12-Setup.exe](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.12/BunkerVPN-Windows-v1.0.12-Setup.exe)
-            * 🧰 **Портативная версия (Portable ZIP):** [BunkerVPN-Windows-v1.0.12-Portable.zip](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.12/BunkerVPN-Windows-v1.0.12-Portable.zip)
+            * 📥 **Установщик (Installer):** [BunkerVPN-Windows-v1.0.13-Setup.exe](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.13/BunkerVPN-Windows-v1.0.13-Setup.exe)
+            * 🧰 **Портативная версия (Portable ZIP):** [BunkerVPN-Windows-v1.0.13-Portable.zip](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.13/BunkerVPN-Windows-v1.0.13-Portable.zip)
           files: |
             dist/*-Setup.exe
             dist/*-Portable.zip
