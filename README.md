@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/latest"><img src="https://img.shields.io/github/v/release/ANT1VEN0M/BunkerVPN-Windows?color=00E676&label=%D0%A0%D0%B5%D0%BB%D0%B8%D0%B7_v1.0.13" alt="Release" /></a>
+  <a href="https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/latest"><img src="https://img.shields.io/github/v/release/ANT1VEN0M/BunkerVPN-Windows?color=00E676&label=%D0%A0%D0%B5%D0%BB%D0%B8%D0%B7_v1.0.14" alt="Release" /></a>
   <img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-00E5FF" alt="Windows" />
   <img src="https://img.shields.io/badge/.NET-8.0%20WPF-7C4DFF" alt=".NET 8" />
   <img src="https://img.shields.io/badge/Core-sing--box%201.11.4-00E676" alt="Sing-box" />
@@ -21,8 +21,21 @@
 
 ---
 
-## ⚡ Главные возможности (Версия v1.0.13)
+## ⚡ Главные возможности (Версия v1.0.14)
 
+* 📺 **Выделенный каталог «YouTube 4K Ultra»:**
+  * Предустановленная подписка с выделенными узлами без буферизации для плавного просмотра 4K/2K 60fps контента на ПК.
+* 🛡️ **Решение проблемы «Без доступа к Интернету» в трее Windows (NCSI Bypass):**
+  * Прямой обход и приоритетное прямое разрешение системных проверок Windows NCSI (`msftconnecttest.com`, `msftncsi.com`).
+  * Сетевой значок Windows мгновенно сообщает «Доступ к Интернету» и не блокирует Microsoft Store, OneDrive и Edge.
+* 🧠 **Сетевой стек gVisor по умолчанию в TUN:**
+  * Переход на user-space стек `gvisor`. Исключает тихий сброс TCP-пакетов модулями WFP, брандмауэром Windows и антивирусами.
+* ⚡ **Полноценная поддержка VLESS XUDP (`packet_encoding: xudp`):**
+  * Мультиплексирование UDP-трафика для VLESS Reality / TLS. Голосовые каналы Discord Voice, игровой UDP-трафик и DNS-запросы больше не зависают.
+* 🇷🇺 **Отказоустойчивые CDN-зеркала обновлений и подписок:**
+  * Автоматический перебор зеркал (`ghfast.top`, `ghproxy.net`, `mirror.ghproxy.com`) гарантирует скачивание подписок и обновлений без блокировок.
+* 🚀 **Поддержка xhttp / httpupgrade транспортов:**
+  * Корректная обработка современных типов прокси-серверов в подписках.
 * 🚀 **Монитор скорости в реальном времени (Speedometer):**
   * В круг подключения встроен аккуратный динамический счётчик скорости (`↓ Скачивание` / `↑ Отдача` в КБ/с и МБ/с).
   * Прямой замер пропускной способности адаптера `bunker-tun` каждую секунду без нагрузки на систему.
@@ -38,26 +51,22 @@
   * Заменён слепой TCP-коннект на реальный TLS Handshake с проверкой SNI. Неработающие серверы гарантированно получают статус `Недоступен` (`—`) и не поднимаются наверх.
 * 🛡️ **Полное устранение зависаний при отключении (Anti-Freeze):**
   * Процесс отключения переведён в полностью асинхронный фоновый поток (`Task.Run`). Интерфейс никогда не замирает.
-* ⚡ **Ультра-скорость и моментальная отправка сообщений (Zero-Lag):**
-  * Фиксированный безопасный MTU `1360` (полная защита от дропа пакетов в Telegram/Discord).
-  * Переход на `stack: "mixed"` (высокоскоростной gVisor для TCP + нативный стек для UDP).
-  * Отключён `strict_route`, настроен двойной DoH DNS через туннель.
 * 🪟 **Свободный ресайз окна:** изменение размера за любые рамки, кнопка максимизации `🗖` и двойной клик по шапке.
 
 ---
 
-## 📦 Скачать BunkerVPN v1.0.13
+## 📦 Скачать BunkerVPN v1.0.14
 
 | Тип загрузки | Прямая ссылка (GitHub) | Зеркало для РФ (без VPN) | Описание |
 | :--- | :---: | :---: | :--- |
-| 📥 **Установщик (Setup.exe)** | [**Скачать Setup v1.0.13**](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.13/BunkerVPN-Windows-v1.0.13-Setup.exe) | [**Зеркало РФ (Setup)**](https://ghfast.top/https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.13/BunkerVPN-Windows-v1.0.13-Setup.exe) | Рекомендуется. Устанавливает программу, создаёт ярлыки на рабочем столе и автозапуск. |
-| 🧰 **Портативная версия (ZIP)** | [**Скачать Portable v1.0.13**](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.13/BunkerVPN-Windows-v1.0.13-Portable.zip) | [**Зеркало РФ (Portable)**](https://ghfast.top/https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.13/BunkerVPN-Windows-v1.0.13-Portable.zip) | Не требует установки. Распакуйте архив в любую папку и запустите `BunkerVPN.exe`. |
+| 📥 **Установщик (Setup.exe)** | [**Скачать Setup v1.0.14**](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.14/BunkerVPN-Windows-v1.0.14-Setup.exe) | [**Зеркало РФ (Setup)**](https://ghfast.top/https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.14/BunkerVPN-Windows-v1.0.14-Setup.exe) | Рекомендуется. Устанавливает программу, создаёт ярлыки на рабочем столе и автозапуск. |
+| 🧰 **Портативная версия (ZIP)** | [**Скачать Portable v1.0.14**](https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.14/BunkerVPN-Windows-v1.0.14-Portable.zip) | [**Зеркало РФ (Portable)**](https://ghfast.top/https://github.com/ANT1VEN0M/BunkerVPN-Windows/releases/download/v1.0.14/BunkerVPN-Windows-v1.0.14-Portable.zip) | Не требует установки. Распакуйте архив в любую папку и запустите `BunkerVPN.exe`. |
 
 ---
 
 ## 🚀 Быстрый старт
 
-1. Скачайте установщик `BunkerVPN-Windows-v1.0.13-Setup.exe` (или распакуйте Portable ZIP).
+1. Скачайте установщик `BunkerVPN-Windows-v1.0.14-Setup.exe` (или распакуйте Portable ZIP).
 2. Запустите приложение (при запросе UAC разрешите запуск от имени администратора для работы драйвера WinTUN).
 3. Нажмите большую оранжевую кнопку **«ПОДКЛЮЧИТЬ»**.
 4. Проверьте задержку серверов на вкладке **«Серверы»** или нажмите **«📶 По пингу»** для автосортировки лучших узлов.

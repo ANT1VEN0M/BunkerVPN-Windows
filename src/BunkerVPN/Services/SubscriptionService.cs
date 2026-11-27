@@ -24,10 +24,11 @@ namespace BunkerVPN.Services
         public static readonly List<BunkerFeedItem> DefaultFeeds = new()
         {
             new() { Title = "👑 Золотая Выборка VIP", Description = "Протестированные TOP-серверы VLESS Reality & Hysteria 2 с максимальной скоростью", Url = "https://cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/sub/gold.txt", Icon = "👑" },
+            new() { Title = "📺 YouTube 4K Ultra", Description = "Выделенные серверы без буферизации для 4K 60fps видеопотока", Url = "https://cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/sub/youtube.txt", Icon = "📺" },
             new() { Title = "Мировой Микс (YouTube / DPI)", Description = "70 проверенных серверов + WARP для всех заблокированных сайтов", Url = "https://cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/sub/mix.txt", Icon = "🌍" },
             new() { Title = "Discord Voice & Gaming", Description = "Full-Cone UDP для мгновенного подключения голосовых каналов Discord", Url = "https://cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/sub/discord.txt", Icon = "🎮" },
             new() { Title = "Турбо-серверы (Минимальный пинг)", Description = "Быстрые сервера с минимальной задержкой для игр и стриминга", Url = "https://cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/sub/fast.txt", Icon = "⚡" },
-            new() { Title = "Белый список (RU / BY)", Description = "Серверы в белых списках хостингов РФ для обхода глухих блокировок", Url = "https://cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/sub/bs.txt", Icon = "🤍" },
+            new() { Title = "🇷🇺 РФ / Банки (Белый список)", Description = "Серверы в белых списках хостингов РФ для обхода глухих блокировок", Url = "https://cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/sub/bs.txt", Icon = "🇷🇺" },
             new() { Title = "Cloudflare WARP+ (Порт 880)", Description = "Прямой WireGuard туннель Cloudflare с защитой от ТСПУ", Url = "https://cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/sub/warp.txt", Icon = "🚀" },
             new() { Title = "Завод / Проходная (443 & 53)", Description = "Для работы в строгих корпоративных сетях предприятий", Url = "https://cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/sub/factory.txt", Icon = "🏭" }
         };
@@ -48,9 +49,16 @@ namespace BunkerVPN.Services
                 var jsd = url.Replace("raw.githubusercontent.com/ANT1VEN0M/Bunker-Auto-Engine/main/", "cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/");
                 candidateUrls.Insert(0, jsd);
             }
+            if (url.Contains("cdn.jsdelivr.net/gh/ANT1VEN0M/Bunker-Auto-Engine@main/"))
+            {
+                var subFile = url.Substring(url.LastIndexOf('/') + 1);
+                candidateUrls.Add($"https://ghfast.top/https://raw.githubusercontent.com/ANT1VEN0M/Bunker-Auto-Engine/main/sub/{subFile}");
+                candidateUrls.Add($"https://ghproxy.net/https://raw.githubusercontent.com/ANT1VEN0M/Bunker-Auto-Engine/main/sub/{subFile}");
+            }
             if (url.StartsWith("https://raw.githubusercontent.com/", StringComparison.OrdinalIgnoreCase))
             {
                 candidateUrls.Add($"https://ghfast.top/{url}");
+                candidateUrls.Add($"https://ghproxy.net/{url}");
             }
 
             foreach (var targetUrl in candidateUrls)

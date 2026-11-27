@@ -39,7 +39,7 @@ namespace BunkerVPN.Services
             }
         }
 
-        public static string CurrentVersion => "1.0.13";
+        public static string CurrentVersion => "1.0.14";
 
         public async Task<UpdateInfo> CheckForUpdatesAsync()
         {
@@ -48,7 +48,8 @@ namespace BunkerVPN.Services
             var apiUrls = new[]
             {
                 "https://api.github.com/repos/ANT1VEN0M/BunkerVPN-Windows/releases/latest",
-                "https://ghfast.top/https://api.github.com/repos/ANT1VEN0M/BunkerVPN-Windows/releases/latest"
+                "https://ghfast.top/https://api.github.com/repos/ANT1VEN0M/BunkerVPN-Windows/releases/latest",
+                "https://ghproxy.net/https://api.github.com/repos/ANT1VEN0M/BunkerVPN-Windows/releases/latest"
             };
 
             foreach (var url in apiUrls)
@@ -105,6 +106,7 @@ namespace BunkerVPN.Services
             if (downloadUrl.StartsWith("https://github.com", StringComparison.OrdinalIgnoreCase))
             {
                 candidateMirrors.Add($"https://ghfast.top/{downloadUrl}");
+                candidateMirrors.Add($"https://ghproxy.net/{downloadUrl}");
                 candidateMirrors.Add($"https://mirror.ghproxy.com/{downloadUrl}");
             }
             candidateMirrors.Add(downloadUrl);
